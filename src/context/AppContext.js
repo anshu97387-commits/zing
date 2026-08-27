@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext } from 'react';
+import { supabaseService } from '../lib/supabaseService';
 
 const AppContext = createContext();
 
@@ -16,6 +17,12 @@ export const AppProvider = ({ children }) => {
 
   const completeOnboarding = () => {
     setIsOnboarded(true);
+    // Background sync with Supabase database
+    supabaseService.saveUserProfile({
+      ...user,
+      coins,
+      isPaused,
+    });
   };
 
   const updateUser = (data) => {
@@ -23,13 +30,19 @@ export const AppProvider = ({ children }) => {
   };
 
   const togglePause = () => {
-    setIsPaused(prev => !prev);
+    setIsPaused((prev) => {
+      const nextState = !prev;
+      supabaseService.togglePauseStatus(user.id, nextState);
+      return nextState;
+    });
   };
 
   const purchaseAddon = (addon) => {
-    if (coins >= addon.cost && !addons.find(a => a.id === addon.id)) {
-      setCoins(prev => prev - addon.cost);
-      setAddons(prev => [...prev, addon]);
+    if (coins >= addon.cost && !addons.find((a) => a.id === addon.id)) {
+      const newCoins = coins - addon.cost;
+      setCoins(newCoins);
+      setAddons((prev) => [...prev, addon]);
+      supabaseService.updateCoins(user.id, newCoins);
     }
   };
 
