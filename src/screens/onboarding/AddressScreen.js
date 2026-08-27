@@ -37,7 +37,7 @@ export default function AddressScreen() {
   const handleFinish = () => {
     const fullAddress = `${street}${landmark ? ' (' + landmark + ')' : ''}${city ? ', ' + city : ''}${pincode ? ' - ' + pincode : ''}`;
     updateUser({ 
-      address: fullAddress.trim() || 'Tower 4, Flat 302, Sector 14', 
+      address: fullAddress.trim() || "Near Gold's Gym, Andheri West", 
       phone: phone.trim() || user?.phone || '+91 9876543210',
       instructions: 'Silent Doorstep Drop (6:00 AM)'
     });

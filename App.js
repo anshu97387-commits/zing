@@ -3,28 +3,43 @@ import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Home, Wallet, User, Users, Zap } from 'lucide-react-native';
+import { Home, Calendar, Wallet, User, Users, Zap } from 'lucide-react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 
 import { AppProvider, useAppContext } from './src/context/AppContext';
 import { Colors } from './src/theme/colors';
 
-// 5 Onboarding Screens (1:1 Exact Mockup Match)
+// Onboarding Screens (1:1 Exact Mockup Match)
 import LandingScreen from './src/screens/onboarding/LandingScreen';
 import PhoneAuthScreen from './src/screens/auth/PhoneAuthScreen';
 import GoalScreen from './src/screens/onboarding/GoalScreen';
 import PersonalizeScreen from './src/screens/onboarding/PersonalizeScreen';
 import AddressScreen from './src/screens/onboarding/AddressScreen';
+import SubscriptionConfirmedScreen from './src/screens/SubscriptionConfirmedScreen';
 
-// Main Screens
+// Dashboard & Main App Screens (1:1 Exact Mockup Match)
 import HomeScreen from './src/screens/HomeScreen';
+import DrinkLogScreen from './src/screens/DrinkLogScreen';
+import DrinkLogDetailScreen from './src/screens/DrinkLogDetailScreen';
 import WalletScreen from './src/screens/WalletScreen';
 import ReferScreen from './src/screens/ReferScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
+const HomeStack = createNativeStackNavigator();
+
+function HomeStackNavigator() {
+  return (
+    <HomeStack.Navigator screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
+      <HomeStack.Screen name="HomeScreen" component={HomeScreen} />
+      <HomeStack.Screen name="SubscriptionConfirmed" component={SubscriptionConfirmedScreen} />
+      <HomeStack.Screen name="DrinkLog" component={DrinkLogScreen} />
+      <HomeStack.Screen name="DrinkLogDetail" component={DrinkLogDetailScreen} />
+    </HomeStack.Navigator>
+  );
+}
 
 function MainTabs() {
   return (
@@ -55,10 +70,19 @@ function MainTabs() {
     >
       <Tab.Screen 
         name="Home" 
-        component={HomeScreen} 
+        component={HomeStackNavigator} 
         options={{
           tabBarIcon: ({ color, focused }) => (
             <Home color={color} size={22} strokeWidth={focused ? 2.5 : 2} />
+          )
+        }}
+      />
+      <Tab.Screen 
+        name="Streak" 
+        component={DrinkLogScreen} 
+        options={{
+          tabBarIcon: ({ color, focused }) => (
+            <Calendar color={color} size={22} strokeWidth={focused ? 2.5 : 2} />
           )
         }}
       />
@@ -81,7 +105,7 @@ function MainTabs() {
         }}
       />
       <Tab.Screen 
-        name="Profile" 
+        name="Settings" 
         component={ProfileScreen} 
         options={{
           tabBarIcon: ({ color, focused }) => (
@@ -107,6 +131,7 @@ function OnboardingStack() {
       <Stack.Screen name="Goal" component={GoalScreen} />
       <Stack.Screen name="Personalize" component={PersonalizeScreen} />
       <Stack.Screen name="Address" component={AddressScreen} />
+      <Stack.Screen name="SubscriptionConfirmed" component={SubscriptionConfirmedScreen} />
     </Stack.Navigator>
   );
 }

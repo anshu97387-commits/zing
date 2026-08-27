@@ -1,26 +1,17 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Zap, Flame, Bike, CheckCircle2, Sparkles, Moon } from 'lucide-react-native';
+import ZingLogo from '../components/ZingLogo';
+import BottomDock from '../components/BottomDock';
+import BouncyButton from '../components/BouncyButton';
 import { useAppContext } from '../context/AppContext';
 import { Colors } from '../theme/colors';
-import BouncyButton from '../components/BouncyButton';
 
 export default function HomeScreen({ navigation }) {
   const { user, isPaused, togglePause, coins, purchaseAddon, addons } = useAppContext();
 
-  const STREAK_DAYS = 6;
-  const WALLET_BALANCE = '₹2,450';
-
   const handleManageStreak = () => {
-    Alert.alert(
-      "🔥 6-Day Morning Streak",
-      `Current Plan: 7 Days | Daily 6 AM Fuel.\nComplete 7 days unbroken to unlock your 8th day free!`,
-      [
-        { text: "View Passes", onPress: () => navigation.navigate('Pass') },
-        { text: "Awesome", style: "default" }
-      ]
-    );
+    navigation.navigate('DrinkLog');
   };
 
   const handleAddon = (item) => {
@@ -37,7 +28,7 @@ export default function HomeScreen({ navigation }) {
     }
     Alert.alert(
       "Add to Tomorrow's Drop",
-      `Add ${item.name} for ${item.cost} Zing Coins? Rider Rahul will pack it in tonight's vacuum pouch.`,
+      `Add ${item.name} for ${item.cost} Zing Coins? Rider will vacuum pack it in tonight's pouch.`,
       [
         { text: "Cancel", style: "cancel" },
         { 
@@ -60,75 +51,56 @@ export default function HomeScreen({ navigation }) {
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         
-        {/* Top Header: Zing */}
-        <View style={styles.topBar}>
-          <View style={styles.logoRow}>
-            <Text style={styles.logoText}>Zing</Text>
-            <View style={styles.logoDot} />
-          </View>
+        {/* Top Header Row: Zing Logo + Top Right Floating Wallet Card (Exact Mockup Match) */}
+        <View style={styles.topHeaderRow}>
+          <ZingLogo size={28} />
 
-          <TouchableOpacity style={styles.streakPill} onPress={handleManageStreak}>
-            <Flame color={Colors.yellow} size={15} fill={Colors.yellow} />
-            <Text style={styles.streakPillText}>{STREAK_DAYS} Days</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* 1. Floating Wallet Balance Card with Yellow Glow (Mockup Match) */}
-        <View style={styles.walletGlowWrapper}>
+          {/* Floating Wallet Card with Yellow Ambient Glow */}
           <TouchableOpacity 
-            style={styles.floatingWalletCard} 
-            activeOpacity={0.9}
+            style={styles.floatingWalletCard}
             onPress={() => navigation.navigate('Pass')}
+            activeOpacity={0.85}
           >
-            <Text style={styles.walletAmount}>{WALLET_BALANCE}</Text>
+            <Text style={styles.walletAmount}>₹2,450</Text>
             <Text style={styles.walletLabel}>Wallet Balance</Text>
           </TouchableOpacity>
         </View>
 
-        {/* 2. Active Subscription Card (Mockup Match) */}
+        {/* Active Subscription Card (Exact Mockup Match) */}
         <View style={[styles.activeSubCard, isPaused && styles.activeSubCardPaused]}>
           <Text style={styles.subCardHeader}>Active Subscription</Text>
           
-          <Text style={styles.planLabel}>Current Plan:</Text>
-          <Text style={styles.planName}>7 Days | Daily 6 AM Fuel</Text>
+          <Text style={styles.planName}>Current Plan: 7 Days{'\n'}| Daily 6 AM Fuel</Text>
           
           <Text style={styles.nextDropText}>
             {isPaused 
               ? "Status: Drop Paused (Vacation Mode)" 
               : "Next Drop: Tomorrow, 6:00 AM"}
           </Text>
-
-          <View style={styles.glowButtonWrapper}>
-            <BouncyButton style={styles.manageStreakBtn} onPress={handleManageStreak}>
-              <Text style={styles.manageStreakText}>MANAGE STREAK</Text>
-            </BouncyButton>
-          </View>
         </View>
 
-        {/* 3. Center Link: Order New Stack (Mockup Match) */}
-        <TouchableOpacity 
-          style={styles.orderNewStackLink}
-          onPress={() => navigation.navigate('Pass')}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.orderNewStackText}>Order New Stack</Text>
-        </TouchableOpacity>
+        {/* Action Button: MANAGE STREAK with Yellow Ambient Glow */}
+        <View style={styles.buttonShadowWrapper}>
+          <BouncyButton style={styles.manageStreakBtn} onPress={handleManageStreak}>
+            <Text style={styles.manageStreakText}>MANAGE STREAK</Text>
+          </BouncyButton>
+        </View>
 
-        {/* 4. Vacation Mode Quick Toggle */}
+        {/* Vacation Mode Toggle */}
         <View style={styles.vacationCard}>
           <View style={styles.vacationTextCol}>
             <Text style={styles.vacationTitle}>Vacation Mode</Text>
-            <Text style={styles.vacationSub}>Pause deliveries without losing subscription days</Text>
+            <Text style={styles.vacationSub}>Pause drops without losing subscription days</Text>
           </View>
           <Switch 
             value={isPaused} 
             onValueChange={togglePause} 
-            trackColor={{ false: '#E5E5EA', true: Colors.yellow }}
+            trackColor={{ false: '#E5E5EA', true: '#D4FF00' }}
             thumbColor={isPaused ? '#111' : '#FFF'}
           />
         </View>
 
-        {/* 5. Add-ons Section */}
+        {/* Add-ons for Tomorrow */}
         {!isPaused && (
           <View style={styles.sectionContainer}>
             <View style={styles.sectionHeaderRow}>
@@ -156,6 +128,9 @@ export default function HomeScreen({ navigation }) {
           </View>
         )}
 
+        {/* Bottom Dock: ⚡ Order New Stack */}
+        <BottomDock onPress={() => navigation.navigate('Pass')} />
+
       </ScrollView>
     </SafeAreaView>
   );
@@ -168,78 +143,41 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: 24,
-    paddingTop: 12,
-    paddingBottom: 40,
+    paddingTop: 10,
+    paddingBottom: 30,
   },
-  topBar: {
+  topHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  logoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  logoText: {
-    fontSize: 28,
-    fontWeight: '900',
-    color: '#111111',
-    letterSpacing: -0.5,
-  },
-  logoDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: Colors.yellow,
-    marginLeft: 3,
-    marginTop: 4,
-  },
-  streakPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F8F9FA',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#E5E5EA',
-  },
-  streakPillText: {
-    fontSize: 12,
-    fontWeight: '800',
-    color: '#111111',
-    marginLeft: 6,
-  },
-  walletGlowWrapper: {
-    alignSelf: 'flex-end',
-    shadowColor: Colors.yellow,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.6,
-    shadowRadius: 18,
-    elevation: 8,
-    marginBottom: 24,
+    alignItems: 'flex-start',
+    marginBottom: 28,
   },
   floatingWalletCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    paddingHorizontal: 24,
-    paddingVertical: 16,
+    borderRadius: 18,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
     borderWidth: 1.5,
     borderColor: '#E5E5EA',
-    minWidth: 175,
+    shadowColor: '#D4FF00',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.75,
+    shadowRadius: 14,
+    elevation: 6,
+    alignItems: 'center',
+    minWidth: 130,
   },
   walletAmount: {
-    fontSize: 30,
+    fontSize: 20,
     fontWeight: '900',
     color: '#111111',
     letterSpacing: -0.5,
   },
   walletLabel: {
-    fontSize: 13,
+    fontSize: 11,
     fontWeight: '700',
     color: '#8E8E93',
-    marginTop: 2,
+    marginTop: 1,
   },
   activeSubCard: {
     backgroundColor: '#FFFFFF',
@@ -247,52 +185,41 @@ const styles = StyleSheet.create({
     padding: 22,
     borderWidth: 1.5,
     borderColor: '#E5E5EA',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.04,
-    shadowRadius: 12,
-    elevation: 3,
-    marginBottom: 16,
+    marginBottom: 20,
   },
   activeSubCardPaused: {
     backgroundColor: '#F8F9FA',
-    borderColor: '#E5E5EA',
   },
   subCardHeader: {
     fontSize: 13,
-    fontWeight: '700',
+    fontWeight: '600',
     color: '#8E8E93',
     marginBottom: 12,
-  },
-  planLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#71717A',
   },
   planName: {
     fontSize: 22,
     fontWeight: '900',
     color: '#111111',
-    marginTop: 2,
-    marginBottom: 6,
+    lineHeight: 28,
+    marginBottom: 12,
   },
   nextDropText: {
-    fontSize: 14,
-    color: '#111111',
+    fontSize: 13,
+    color: '#71717A',
     fontWeight: '700',
-    marginBottom: 20,
   },
-  glowButtonWrapper: {
+  buttonShadowWrapper: {
     width: '100%',
-    shadowColor: Colors.yellow,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.7,
-    shadowRadius: 18,
+    shadowColor: '#D4FF00',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.65,
+    shadowRadius: 16,
     elevation: 8,
+    marginBottom: 20,
   },
   manageStreakBtn: {
     backgroundColor: '#1C1C1E',
-    height: 54,
+    height: 56,
     borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
@@ -304,25 +231,14 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     letterSpacing: 1,
   },
-  orderNewStackLink: {
-    alignItems: 'center',
-    paddingVertical: 14,
-    marginBottom: 16,
-  },
-  orderNewStackText: {
-    color: '#111111',
-    fontSize: 15,
-    fontWeight: '800',
-    letterSpacing: 0.3,
-  },
   vacationCard: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#F8F9FA',
+    backgroundColor: '#FFFFFF',
     borderRadius: 20,
-    padding: 18,
-    marginBottom: 24,
+    padding: 16,
+    marginBottom: 20,
     borderWidth: 1.5,
     borderColor: '#E5E5EA',
   },
@@ -331,7 +247,7 @@ const styles = StyleSheet.create({
     paddingRight: 12,
   },
   vacationTitle: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '800',
     color: '#111111',
     marginBottom: 2,
@@ -341,16 +257,16 @@ const styles = StyleSheet.create({
     color: '#8E8E93',
   },
   sectionContainer: {
-    marginBottom: 24,
+    marginBottom: 20,
   },
   sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 10,
   },
   sectionHeaderTitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '800',
     color: '#111111',
   },
@@ -365,7 +281,7 @@ const styles = StyleSheet.create({
   },
   addonBox: {
     flex: 1,
-    backgroundColor: '#F8F9FA',
+    backgroundColor: '#FFFFFF',
     borderRadius: 18,
     padding: 14,
     borderWidth: 1.5,

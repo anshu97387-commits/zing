@@ -1,32 +1,29 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Switch, Modal, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { User, Zap, LogOut, X } from 'lucide-react-native';
+import { User, Package, CreditCard, Moon, Bell, HelpCircle, ChevronRight, LogOut, X } from 'lucide-react-native';
+import ZingLogo from '../components/ZingLogo';
+import BouncyButton from '../components/BouncyButton';
 import { useAppContext } from '../context/AppContext';
 import { Colors } from '../theme/colors';
-import BouncyButton from '../components/BouncyButton';
 
-export default function ProfileScreen() {
+export default function ProfileScreen({ navigation }) {
   const { user, updateUser, resetApp } = useAppContext();
   const [darkMode, setDarkMode] = useState(false);
-  const [notifications, setNotifications] = useState(true);
-  const [subDetails, setSubDetails] = useState(true);
-  const [paymentMethods, setPaymentMethods] = useState(true);
   const [showEditModal, setShowEditModal] = useState(false);
   const [name, setName] = useState(user?.name || 'Arjun Singh');
-  const [email, setEmail] = useState('arjun.s@zing.fit');
   const [phone, setPhone] = useState(user?.phone || '+91 9876543210');
 
   const handleSaveProfile = () => {
     updateUser({ name, phone });
     setShowEditModal(false);
-    Alert.alert('Profile Updated', 'Your profile details have been saved.');
+    Alert.alert('Profile Saved', 'Your details have been updated.');
   };
 
   const handleLogout = () => {
     Alert.alert(
       "Log Out",
-      "Are you sure you want to log out?",
+      "Are you sure you want to log out of Zing?",
       [
         { text: "Cancel", style: "cancel" },
         { text: "Log Out", style: "destructive", onPress: () => resetApp && resetApp() }
@@ -34,91 +31,107 @@ export default function ProfileScreen() {
     );
   };
 
-  const orderHistory = [
-    { id: '12345', title: '7 Day Stack - ₹1499' },
-    { id: '12344', title: 'Protein Pouch - ₹999' },
-    { id: '12343', title: 'Protein Pouch - ₹999' },
-  ];
-
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         
-        {/* Top Brand: Zing */}
-        <View style={styles.logoRow}>
-          <Text style={styles.logoText}>Zing</Text>
-          <View style={styles.logoDot} />
+        {/* Top Header Row: Zing Logo + Top Right Floating Wallet Card */}
+        <View style={styles.topHeaderRow}>
+          <ZingLogo size={28} />
+
+          {/* Floating Wallet Card with Yellow Ambient Glow */}
+          <TouchableOpacity 
+            style={styles.floatingWalletCard}
+            onPress={() => navigation.navigate('Pass')}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.walletAmount}>₹2,450</Text>
+            <Text style={styles.walletLabel}>Wallet Balance</Text>
+          </TouchableOpacity>
         </View>
 
-        {/* 1. MY PROFILE */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>MY PROFILE</Text>
-        </View>
+        {/* Heading */}
+        <Text style={styles.headingTitle}>SETTINGS</Text>
 
-        <View style={styles.profileCard}>
+        {/* User Profile Card (Exact Mockup Match) */}
+        <TouchableOpacity 
+          style={styles.profileCard} 
+          onPress={() => setShowEditModal(true)}
+          activeOpacity={0.85}
+        >
           <View style={styles.avatarCircle}>
-            <User color="#111111" size={44} />
+            <User color="#111111" size={28} />
+          </View>
+          <View style={styles.profileTextCol}>
+            <Text style={styles.profileName}>{user?.name || 'Arjun Singh'}</Text>
+            <Text style={styles.profilePhone}>{user?.phone || '+91 9876543210'}</Text>
+          </View>
+        </TouchableOpacity>
+
+        {/* Settings List (Exact Mockup Match) */}
+        <View style={styles.settingsList}>
+          {/* 1. Subscription Details */}
+          <TouchableOpacity 
+            style={styles.settingItem} 
+            onPress={() => navigation.navigate('Pass')}
+            activeOpacity={0.7}
+          >
+            <Package color="#111111" size={18} style={styles.settingIcon} />
+            <Text style={styles.settingLabel}>Subscription Details</Text>
+            <ChevronRight color="#C7C7CC" size={18} />
+          </TouchableOpacity>
+
+          {/* 2. Payment Methods */}
+          <TouchableOpacity 
+            style={styles.settingItem} 
+            onPress={() => navigation.navigate('Pass')}
+            activeOpacity={0.7}
+          >
+            <CreditCard color="#111111" size={18} style={styles.settingIcon} />
+            <Text style={styles.settingLabel}>Payment Methods</Text>
+            <ChevronRight color="#C7C7CC" size={18} />
+          </TouchableOpacity>
+
+          {/* 3. Dark Mode (Off) with Switch */}
+          <View style={styles.settingItem}>
+            <Moon color="#111111" size={18} style={styles.settingIcon} />
+            <Text style={styles.settingLabel}>Dark Mode ({darkMode ? 'On' : 'Off'})</Text>
+            <Switch 
+              value={darkMode} 
+              onValueChange={setDarkMode} 
+              trackColor={{ false: '#E5E5EA', true: '#D4FF00' }}
+              thumbColor={darkMode ? '#111111' : '#FFFFFF'}
+            />
           </View>
 
-          <Text style={styles.profileName}>Name: {user?.name || 'Arjun Singh'}</Text>
-          <Text style={styles.profileMeta}>Email: {email}</Text>
-          <Text style={styles.profileMeta}>Phone: {user?.phone || '+91 9876543210'}</Text>
+          {/* 4. Notifications */}
+          <TouchableOpacity 
+            style={styles.settingItem} 
+            onPress={() => Alert.alert("Notifications", "6:00 AM drop delivery alerts are active.")}
+            activeOpacity={0.7}
+          >
+            <Bell color="#111111" size={18} style={styles.settingIcon} />
+            <Text style={styles.settingLabel}>Notifications</Text>
+            <ChevronRight color="#C7C7CC" size={18} />
+          </TouchableOpacity>
 
-          <TouchableOpacity style={styles.editProfileBtn} onPress={() => setShowEditModal(true)}>
-            <Text style={styles.editProfileText}>Edit Profile</Text>
+          {/* 5. Help & Support */}
+          <TouchableOpacity 
+            style={styles.settingItem} 
+            onPress={() => Alert.alert("Zing 24/7 Support", "WhatsApp Helpdesk: +91 98765 43210\nEmail: support@zing.fit")}
+            activeOpacity={0.7}
+          >
+            <HelpCircle color="#111111" size={18} style={styles.settingIcon} />
+            <Text style={styles.settingLabel}>Help & Support</Text>
+            <ChevronRight color="#C7C7CC" size={18} />
           </TouchableOpacity>
         </View>
 
-        {/* 2. SETTINGS */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>SETTINGS</Text>
-        </View>
-
-        <View style={styles.settingsCard}>
-          <SettingSwitchRow 
-            label="Dark Mode (On)" 
-            value={darkMode} 
-            onValueChange={setDarkMode} 
-          />
-          <SettingSwitchRow 
-            label="Notifications" 
-            value={notifications} 
-            onValueChange={setNotifications} 
-          />
-          <SettingSwitchRow 
-            label="Subscription Details" 
-            value={subDetails} 
-            onValueChange={setSubDetails} 
-          />
-          <SettingSwitchRow 
-            label="Payment Methods" 
-            value={paymentMethods} 
-            onValueChange={setPaymentMethods} 
-          />
-
-          <TouchableOpacity style={styles.logoutRow} onPress={handleLogout}>
-            <Text style={styles.logoutText}>Log Out</Text>
-            <LogOut color="#EF4444" size={18} />
-          </TouchableOpacity>
-        </View>
-
-        {/* 3. ORDER HISTORY */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>ORDER HISTORY</Text>
-        </View>
-
-        <View style={styles.orderHistoryList}>
-          {orderHistory.map((order) => (
-            <View key={order.id} style={styles.orderCard}>
-              <View style={styles.orderBoltCircle}>
-                <Zap color="#111111" size={16} fill={Colors.yellow} />
-              </View>
-              <View style={styles.orderInfo}>
-                <Text style={styles.orderNumber}>Order #{order.id}</Text>
-                <Text style={styles.orderTitle}>{order.title}</Text>
-              </View>
-            </View>
-          ))}
+        {/* Action Button: LOG OUT */}
+        <View style={styles.buttonShadowWrapper}>
+          <BouncyButton style={styles.logoutBtn} onPress={handleLogout}>
+            <Text style={styles.logoutBtnText}>LOG OUT</Text>
+          </BouncyButton>
         </View>
 
       </ScrollView>
@@ -136,7 +149,7 @@ export default function ProfileScreen() {
 
             <TextInput
               style={styles.modalInput}
-              placeholder="Name"
+              placeholder="Full Name"
               placeholderTextColor="#A1A1AA"
               value={name}
               onChangeText={setName}
@@ -144,43 +157,21 @@ export default function ProfileScreen() {
 
             <TextInput
               style={styles.modalInput}
-              placeholder="Email"
-              placeholderTextColor="#A1A1AA"
-              value={email}
-              onChangeText={setEmail}
-            />
-
-            <TextInput
-              style={styles.modalInput}
-              placeholder="Phone"
+              placeholder="Phone Number"
               placeholderTextColor="#A1A1AA"
               value={phone}
               onChangeText={setPhone}
             />
 
-            <View style={styles.glowButtonWrapper}>
-              <BouncyButton style={styles.saveBtn} onPress={handleSaveProfile}>
-                <Text style={styles.saveBtnText}>Save Changes</Text>
-              </BouncyButton>
-            </View>
+            <BouncyButton style={styles.saveModalBtn} onPress={handleSaveProfile}>
+              <Text style={styles.saveModalText}>Save Changes</Text>
+            </BouncyButton>
           </View>
         </View>
       </Modal>
     </SafeAreaView>
   );
 }
-
-const SettingSwitchRow = ({ label, value, onValueChange }) => (
-  <View style={styles.settingRow}>
-    <Text style={styles.settingLabel}>{label}</Text>
-    <Switch 
-      value={value} 
-      onValueChange={onValueChange} 
-      trackColor={{ false: '#E5E5EA', true: Colors.yellow }}
-      thumbColor={value ? '#111111' : '#FFFFFF'}
-    />
-  </View>
-);
 
 const styles = StyleSheet.create({
   container: {
@@ -189,156 +180,130 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: 24,
-    paddingTop: 12,
-    paddingBottom: 40,
+    paddingTop: 10,
+    paddingBottom: 30,
   },
-  logoRow: {
+  topHeaderRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
     marginBottom: 20,
   },
-  logoText: {
-    fontSize: 28,
+  floatingWalletCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderWidth: 1.5,
+    borderColor: '#E5E5EA',
+    shadowColor: '#D4FF00',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.75,
+    shadowRadius: 14,
+    elevation: 6,
+    alignItems: 'center',
+    minWidth: 130,
+  },
+  walletAmount: {
+    fontSize: 20,
     fontWeight: '900',
     color: '#111111',
     letterSpacing: -0.5,
   },
-  logoDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: Colors.yellow,
-    marginLeft: 3,
-    marginTop: 4,
+  walletLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#8E8E93',
+    marginTop: 1,
   },
-  sectionHeader: {
-    alignItems: 'center',
-    marginBottom: 12,
-    marginTop: 8,
-  },
-  sectionTitle: {
-    fontSize: 15,
+  headingTitle: {
+    fontSize: 26,
     fontWeight: '900',
     color: '#111111',
-    letterSpacing: 1,
+    letterSpacing: 0.5,
+    textAlign: 'center',
+    marginBottom: 20,
   },
   profileCard: {
-    backgroundColor: '#F8F9FA',
-    borderRadius: 24,
-    padding: 24,
+    flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1.5,
-    borderColor: '#E5E5EA',
-    marginBottom: 24,
-  },
-  avatarCircle: {
-    width: 86,
-    height: 86,
-    borderRadius: 43,
     backgroundColor: '#FFFFFF',
-    borderWidth: 1.5,
-    borderColor: '#E5E5EA',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 14,
-  },
-  profileName: {
-    fontSize: 17,
-    fontWeight: '800',
-    color: '#111111',
-    marginBottom: 4,
-  },
-  profileMeta: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#71717A',
-    marginBottom: 4,
-  },
-  editProfileBtn: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1.5,
-    borderColor: '#E5E5EA',
-    paddingHorizontal: 20,
-    paddingVertical: 8,
-    borderRadius: 14,
-    marginTop: 10,
-  },
-  editProfileText: {
-    color: '#111111',
-    fontSize: 13,
-    fontWeight: '800',
-  },
-  settingsCard: {
-    backgroundColor: '#F8F9FA',
-    borderRadius: 24,
-    padding: 16,
-    borderWidth: 1.5,
-    borderColor: '#E5E5EA',
-    marginBottom: 24,
-  },
-  settingRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E5EA',
-  },
-  settingLabel: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#111111',
-  },
-  logoutRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 14,
-    paddingHorizontal: 8,
-  },
-  logoutText: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#EF4444',
-  },
-  orderHistoryList: {
-    gap: 12,
-    marginBottom: 24,
-  },
-  orderCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F8F9FA',
     borderRadius: 20,
     padding: 16,
     borderWidth: 1.5,
     borderColor: '#E5E5EA',
+    marginBottom: 20,
   },
-  orderBoltCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#FFFFFF',
+  avatarCircle: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: '#F3F4F6',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 14,
     borderWidth: 1,
     borderColor: '#E5E5EA',
   },
-  orderInfo: {
+  profileTextCol: {
     flex: 1,
   },
-  orderNumber: {
-    fontSize: 14,
+  profileName: {
+    fontSize: 16,
     fontWeight: '800',
     color: '#111111',
     marginBottom: 2,
   },
-  orderTitle: {
+  profilePhone: {
     fontSize: 13,
     fontWeight: '600',
     color: '#71717A',
+  },
+  settingsList: {
+    gap: 10,
+    marginBottom: 24,
+  },
+  settingItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    borderWidth: 1.5,
+    borderColor: '#E5E5EA',
+  },
+  settingIcon: {
+    marginRight: 12,
+  },
+  settingLabel: {
+    flex: 1,
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#111111',
+  },
+  buttonShadowWrapper: {
+    width: '100%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 6,
+    marginBottom: 10,
+  },
+  logoutBtn: {
+    backgroundColor: '#1C1C1E',
+    height: 56,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+  },
+  logoutBtnText: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontWeight: '900',
+    letterSpacing: 1,
   },
   modalOverlay: {
     flex: 1,
@@ -375,14 +340,7 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: '#E5E5EA',
   },
-  glowButtonWrapper: {
-    shadowColor: Colors.yellow,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.7,
-    shadowRadius: 18,
-    elevation: 8,
-  },
-  saveBtn: {
+  saveModalBtn: {
     backgroundColor: '#1C1C1E',
     height: 56,
     borderRadius: 18,
@@ -390,7 +348,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 8,
   },
-  saveBtnText: {
+  saveModalText: {
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '900',
