@@ -9,7 +9,7 @@ export const supabaseService = {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .upsert([
+        .insert([
           {
             name: userData.name,
             goal: userData.goal,
@@ -17,9 +17,9 @@ export const supabaseService = {
             instructions: userData.instructions,
             coins: userData.coins || 150,
             is_paused: userData.isPaused || false,
-            updated_at: new Date().toISOString(),
           }
-        ]);
+        ])
+        .select();
 
       if (error) {
         console.warn('Supabase saveUserProfile notice:', error.message);
