@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, KeyboardAvoidingView, Platform, Alert, ActivityIndicator, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TextInput, KeyboardAvoidingView, Platform, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppContext } from '../../context/AppContext';
-import { Colors } from '../../theme/colors';
+import ZingLogo from '../../components/ZingLogo';
+import BottomDock from '../../components/BottomDock';
 import BouncyButton from '../../components/BouncyButton';
 import { supabaseService } from '../../lib/supabaseService';
 
@@ -10,38 +11,33 @@ export default function PhoneAuthScreen({ navigation }) {
   const { updateUser, setAuthenticated } = useAppContext();
   const [phoneNumber, setPhoneNumber] = useState('9876543210');
   const [otp, setOtp] = useState('6');
-  const [isOtpSent, setIsOtpSent] = useState(true);
   const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(30);
 
-  const formattedPhone = `+91${phoneNumber}`;
-
-  const handleSendOtp = async () => {
-    if (phoneNumber.length === 10) {
-      setLoading(true);
-      await supabaseService.sendPhoneOtp(formattedPhone);
-      setLoading(false);
-      setIsOtpSent(true);
-
-      setTimeout(() => {
-        setOtp('624089');
-      }, 800);
-    } else {
-      Alert.alert('Invalid Mobile', 'Please enter a valid 10-digit mobile number.');
+  useEffect(() => {
+    let interval = null;
+    if (timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
     }
-  };
+    return () => clearInterval(interval);
+  }, [timer]);
 
   const handleVerifyOtp = async () => {
-    if (otp.length >= 4) {
-      setLoading(true);
-      await supabaseService.verifyPhoneOtp(formattedPhone, otp);
-      setLoading(false);
+    setLoading(true);
+    await supabaseService.verifyPhoneOtp(`+91${phoneNumber}`, otp);
+    setLoading(false);
 
-      updateUser({ phone: `+91 ${phoneNumber}` });
-      setAuthenticated(true);
-      navigation.navigate('Name');
-    } else {
-      Alert.alert('Invalid OTP', 'Please enter the verification code.');
+    updateUser({ phone: `+91 ${phoneNumber}` });
+    setAuthenticated(true);
+    navigation.navigate('Goal');
+  };
+
+  const handleResend = () => {
+    if (timer === 0) {
+      setTimer(30);
+      Alert.alert("Code Resent", "A new 6-digit verification code has been sent.");
     }
   };
 
@@ -50,112 +46,73 @@ export default function PhoneAuthScreen({ navigation }) {
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.content}>
         
         <View style={styles.topArea}>
-          {/* Top Brand: Zing with Yellow Bolt */}
-          <View style={styles.logoRow}>
-            <Text style={styles.logoText}>Zing</Text>
-            <View style={styles.logoDot} />
+          {/* Top Logo: Zing */}
+          <View style={styles.topLogoRow}>
+            <ZingLogo size={28} />
           </View>
 
-          {/* Heading */}
-          <Text style={styles.title}>{isOtpSent ? 'Enter OTP' : 'Enter Mobile'}</Text>
-          <Text style={styles.subtitle}>
-            {isOtpSent 
-              ? 'We have sent a code to your mobile number' 
-              : 'Required for silent 6:00 AM morning stack delivery tracking.'}
-          </Text>
+          {/* Heading & Subtitle */}
+          <Text style={styles.title}>Enter OTP</Text>
+          <Text style={styles.subtitle}>We have sent a code to your mobile number</Text>
 
-          {isOtpSent && (
-            <Text style={styles.phoneDisplay}>+91 {phoneNumber}</Text>
-          )}
+          {/* Phone Display */}
+          <Text style={styles.phoneDisplay}>+91 {phoneNumber}</Text>
 
-          {!isOtpSent ? (
-            <View style={styles.phoneInputRow}>
-              <View style={styles.countryCodeBadge}>
-                <Text style={styles.countryCodeText}>🇮🇳 +91</Text>
-              </View>
-              <TextInput
-                style={styles.phoneTextInput}
-                placeholder="98765 43210"
-                placeholderTextColor="#A1A1AA"
-                keyboardType="phone-pad"
-                maxLength={10}
-                value={phoneNumber}
-                onChangeText={setPhoneNumber}
-                autoFocus
-              />
-            </View>
-          ) : (
-            <View style={styles.otpBoxesRow}>
-              {[0, 1, 2, 3, 4, 5].map((index) => {
-                const char = otp[index] || '';
-                const isFocused = otp.length === index || (index === 0 && otp.length === 1);
-                return (
-                  <View 
-                    key={index} 
-                    style={[
-                      styles.otpSingleBox, 
-                      isFocused && styles.otpSingleBoxActive,
-                      char ? styles.otpSingleBoxFilled : null
-                    ]}
-                  >
-                    <Text style={styles.otpBoxChar}>{char || ''}</Text>
-                  </View>
-                );
-              })}
-              <TextInput
-                style={styles.hiddenInput}
-                keyboardType="number-pad"
-                maxLength={6}
-                value={otp}
-                onChangeText={setOtp}
-                autoFocus
-              />
-            </View>
-          )}
+          {/* 6 OTP Boxes (Exact Mockup Match) */}
+          <View style={styles.otpBoxesRow}>
+            {[0, 1, 2, 3, 4, 5].map((index) => {
+              const char = otp[index] || '';
+              const isFocused = otp.length === index || (index === 0 && otp.length === 1);
+              return (
+                <View 
+                  key={index} 
+                  style={[
+                    styles.otpSingleBox, 
+                    isFocused && styles.otpSingleBoxActive,
+                    char ? styles.otpSingleBoxFilled : null
+                  ]}
+                >
+                  <Text style={styles.otpBoxChar}>{char || ''}</Text>
+                  {isFocused && !char && <View style={styles.cursorBlink} />}
+                </View>
+              );
+            })}
+            <TextInput
+              style={styles.hiddenInput}
+              keyboardType="number-pad"
+              maxLength={6}
+              value={otp}
+              onChangeText={setOtp}
+              autoFocus
+            />
+          </View>
 
-          {/* Action Button with Yellow Glow (Mockup Match) */}
+          {/* Action Button: VERIFY CODE with Soft Yellow Glow */}
           <View style={styles.glowButtonWrapper}>
-            {!isOtpSent ? (
-              <BouncyButton 
-                style={[styles.verifyBtn, (phoneNumber.length !== 10 || loading) && styles.btnDisabled]} 
-                onPress={handleSendOtp}
-                disabled={phoneNumber.length !== 10 || loading}
-              >
-                {loading ? (
-                  <ActivityIndicator color="#FFF" />
-                ) : (
-                  <Text style={styles.verifyBtnText}>GET CODE</Text>
-                )}
-              </BouncyButton>
-            ) : (
-              <BouncyButton 
-                style={[styles.verifyBtn, (otp.length < 1 || loading) && styles.btnDisabled]} 
-                onPress={handleVerifyOtp}
-                disabled={otp.length < 1 || loading}
-              >
-                {loading ? (
-                  <ActivityIndicator color="#FFF" />
-                ) : (
-                  <Text style={styles.verifyBtnText}>VERIFY CODE</Text>
-                )}
-              </BouncyButton>
-            )}
+            <BouncyButton 
+              style={[styles.verifyBtn, (otp.length < 1 || loading) && styles.btnDisabled]} 
+              onPress={handleVerifyOtp}
+              disabled={otp.length < 1 || loading}
+            >
+              {loading ? (
+                <ActivityIndicator color="#FFF" />
+              ) : (
+                <Text style={styles.verifyBtnText}>VERIFY CODE</Text>
+              )}
+            </BouncyButton>
           </View>
 
-          {isOtpSent && (
-            <Text style={styles.resendNotice}>
-              Didn't receive the code? <Text style={styles.resendLink}>Resend in {timer}s</Text>
+          {/* Resend Notice */}
+          <Text style={styles.resendNotice}>
+            Didn't receive the code?{' '}
+            <Text style={styles.resendLink} onPress={handleResend}>
+              {timer > 0 ? `Resend in ${timer}s` : 'Resend Code'}
             </Text>
-          )}
+          </Text>
         </View>
 
-        {/* Floating Bottom Center Bolt & Label (Exact Mockup Match) */}
-        <View style={styles.bottomCenterContainer}>
-          <TouchableOpacity style={styles.floatingBoltCircle} activeOpacity={0.85}>
-            <Text style={styles.boltEmoji}>⚡</Text>
-          </TouchableOpacity>
-          <Text style={styles.orderNewStackLabel}>Order New Stack</Text>
-        </View>
+        {/* Bottom Dock: ⚡ Order New Stack */}
+        <BottomDock onPress={() => {}} />
 
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -170,87 +127,39 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 24,
-    paddingTop: 16,
-    paddingBottom: 24,
+    paddingTop: 10,
     justifyContent: 'space-between',
   },
   topArea: {
     alignItems: 'center',
     width: '100%',
   },
-  logoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  topLogoRow: {
     alignSelf: 'flex-start',
-    marginBottom: 44,
-  },
-  logoText: {
-    fontSize: 26,
-    fontWeight: '900',
-    color: '#111111',
-    letterSpacing: -0.5,
-  },
-  logoDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: Colors.yellow,
-    marginLeft: 3,
-    marginTop: 4,
+    marginTop: 6,
+    marginBottom: 36,
   },
   title: {
     fontSize: 34,
     fontWeight: '900',
     color: '#111111',
     letterSpacing: -0.5,
-    marginBottom: 8,
+    marginBottom: 6,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 14,
     color: '#8E8E93',
     textAlign: 'center',
-    marginBottom: 24,
+    marginBottom: 20,
     lineHeight: 20,
-    maxWidth: 280,
   },
   phoneDisplay: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '800',
     color: '#111111',
-    letterSpacing: 1,
+    letterSpacing: 0.5,
     marginBottom: 28,
-  },
-  phoneInputRow: {
-    flexDirection: 'row',
-    width: '100%',
-    gap: 12,
-    marginTop: 10,
-    marginBottom: 28,
-  },
-  countryCodeBadge: {
-    backgroundColor: '#F2F2F7',
-    borderRadius: 18,
-    paddingHorizontal: 16,
-    height: 58,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  countryCodeText: {
-    fontSize: 16,
-    fontWeight: '800',
-    color: '#111111',
-  },
-  phoneTextInput: {
-    flex: 1,
-    backgroundColor: '#F2F2F7',
-    borderRadius: 18,
-    paddingHorizontal: 18,
-    height: 58,
-    fontSize: 18,
-    fontWeight: '800',
-    color: '#111111',
-    letterSpacing: 1,
   },
   otpBoxesRow: {
     flexDirection: 'row',
@@ -281,6 +190,11 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     color: '#111111',
   },
+  cursorBlink: {
+    width: 2,
+    height: 22,
+    backgroundColor: '#111111',
+  },
   hiddenInput: {
     position: 'absolute',
     opacity: 0,
@@ -289,16 +203,16 @@ const styles = StyleSheet.create({
   },
   glowButtonWrapper: {
     width: '100%',
-    shadowColor: Colors.yellow,
-    shadowOffset: { width: 0, height: 8 },
+    shadowColor: '#D4FF00',
+    shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.7,
-    shadowRadius: 18,
+    shadowRadius: 16,
     elevation: 8,
     marginBottom: 16,
   },
   verifyBtn: {
     backgroundColor: '#1C1C1E',
-    height: 58,
+    height: 56,
     borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
@@ -309,7 +223,7 @@ const styles = StyleSheet.create({
   },
   verifyBtnText: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '900',
     letterSpacing: 1,
   },
@@ -320,34 +234,6 @@ const styles = StyleSheet.create({
   },
   resendLink: {
     color: '#111111',
-    fontWeight: '700',
-  },
-  bottomCenterContainer: {
-    alignItems: 'center',
-    paddingBottom: 8,
-  },
-  floatingBoltCircle: {
-    width: 58,
-    height: 58,
-    borderRadius: 29,
-    backgroundColor: '#1C1C1E',
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: Colors.yellow,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.6,
-    shadowRadius: 14,
-    elevation: 6,
-    marginBottom: 8,
-  },
-  boltEmoji: {
-    fontSize: 24,
-    color: Colors.yellow,
-  },
-  orderNewStackLabel: {
-    fontSize: 13,
     fontWeight: '800',
-    color: '#111111',
-    letterSpacing: 0.3,
-  }
+  },
 });

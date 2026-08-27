@@ -10,13 +10,14 @@ import { StatusBar } from 'expo-status-bar';
 import { AppProvider, useAppContext } from './src/context/AppContext';
 import { Colors } from './src/theme/colors';
 
-// Auth & Onboarding Screens (Zing White + Yellow Glow)
+// 5 Onboarding Screens (1:1 Exact Mockup Match)
+import LandingScreen from './src/screens/onboarding/LandingScreen';
 import PhoneAuthScreen from './src/screens/auth/PhoneAuthScreen';
-import NameScreen from './src/screens/onboarding/NameScreen';
 import GoalScreen from './src/screens/onboarding/GoalScreen';
+import PersonalizeScreen from './src/screens/onboarding/PersonalizeScreen';
 import AddressScreen from './src/screens/onboarding/AddressScreen';
 
-// Main Screens (Zing White + Yellow Glow)
+// Main Screens
 import HomeScreen from './src/screens/HomeScreen';
 import WalletScreen from './src/screens/WalletScreen';
 import ReferScreen from './src/screens/ReferScreen';
@@ -101,9 +102,10 @@ function OnboardingStack() {
         contentStyle: { backgroundColor: '#FFFFFF' }
       }}
     >
+      <Stack.Screen name="Landing" component={LandingScreen} />
       <Stack.Screen name="PhoneAuth" component={PhoneAuthScreen} />
-      <Stack.Screen name="Name" component={NameScreen} />
       <Stack.Screen name="Goal" component={GoalScreen} />
+      <Stack.Screen name="Personalize" component={PersonalizeScreen} />
       <Stack.Screen name="Address" component={AddressScreen} />
     </Stack.Navigator>
   );

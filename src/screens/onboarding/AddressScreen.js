@@ -1,21 +1,43 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { MapPin, Building, Phone, Zap } from 'lucide-react-native';
 import { useAppContext } from '../../context/AppContext';
-import { Colors } from '../../theme/colors';
+import ZingLogo from '../../components/ZingLogo';
+import BottomDock from '../../components/BottomDock';
 import BouncyButton from '../../components/BouncyButton';
 
 export default function AddressScreen() {
   const { user, updateUser, completeOnboarding } = useAppContext();
   const [street, setStreet] = useState('');
+  const [landmark, setLandmark] = useState('');
   const [city, setCity] = useState('');
   const [pincode, setPincode] = useState('');
   const [phone, setPhone] = useState(user?.phone || '');
 
+  const handlePinpointLocation = () => {
+    Alert.alert(
+      "📍 Location Pinpointed",
+      "Using GPS Coordinates: 28.4595° N, 77.0266° E (Sector 14). Delivery rider assigned!",
+      [
+        {
+          text: "Auto-Fill Address",
+          onPress: () => {
+            setStreet('Tower 4, Flat 302, DLF Phase 2');
+            setLandmark('Near Gold Gym & Metro Pillar 54');
+            setCity('Gurugram');
+            setPincode('122002');
+          }
+        },
+        { text: "OK", style: "cancel" }
+      ]
+    );
+  };
+
   const handleFinish = () => {
-    const fullAddress = `${street}${city ? ', ' + city : ''}${pincode ? ' - ' + pincode : ''}`;
+    const fullAddress = `${street}${landmark ? ' (' + landmark + ')' : ''}${city ? ', ' + city : ''}${pincode ? ' - ' + pincode : ''}`;
     updateUser({ 
-      address: fullAddress.trim() || 'Flat 402, Green Valley Apartments', 
+      address: fullAddress.trim() || 'Tower 4, Flat 302, Sector 14', 
       phone: phone.trim() || user?.phone || '+91 9876543210',
       instructions: 'Silent Doorstep Drop (6:00 AM)'
     });
@@ -26,41 +48,87 @@ export default function AddressScreen() {
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.content}>
         
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollInside}>
-          <View style={styles.logoRow}>
-            <Text style={styles.logoText}>Zing</Text>
-            <View style={styles.logoDot} />
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollArea}>
+          {/* Top Logo: Zing */}
+          <View style={styles.topLogoRow}>
+            <ZingLogo size={28} />
           </View>
 
+          {/* Heading & Subtitle */}
           <Text style={styles.title}>DELIVERY ADDRESS</Text>
-          <Text style={styles.subtitle}>Our delivery rider drops your vacuum pouch silently by 6:00 AM sharp.</Text>
+          <Text style={styles.subtitle}>Where should we deliver your morning fuel?</Text>
 
-          <View style={styles.inputsStack}>
-            <View style={styles.inputContainer}>
+          {/* Mini Interactive Apple Map Preview (Exact Mockup Match) */}
+          <View style={styles.mapCard}>
+            <View style={styles.mapGridPattern}>
+              <View style={styles.mapRoad1} />
+              <View style={styles.mapRoad2} />
+              <View style={styles.mapRoad3} />
+            </View>
+
+            {/* Glowing Center Yellow ⚡ Pin Marker */}
+            <View style={styles.pinWrapper}>
+              <View style={styles.pinGlowBubble}>
+                <Zap color="#111111" size={18} fill="#D4FF00" />
+              </View>
+            </View>
+
+            {/* Floating Pill: Pinpoint Your Location */}
+            <TouchableOpacity 
+              style={styles.pinpointBtn} 
+              onPress={handlePinpointLocation}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.pinpointText}>Pinpoint Your Location</Text>
+            </TouchableOpacity>
+
+            <Text style={styles.appleMapsLabel}>Maps</Text>
+          </View>
+
+          {/* 5 Input Fields with Icons (Exact Mockup Match) */}
+          <View style={styles.formContainer}>
+            {/* 1. Street Address */}
+            <View style={styles.inputWrapper}>
+              <MapPin color="#8E8E93" size={18} style={styles.inputIcon} />
               <TextInput
                 style={styles.textInput}
                 placeholder="Street Address"
                 placeholderTextColor="#A1A1AA"
                 value={street}
                 onChangeText={setStreet}
-                autoFocus
               />
             </View>
 
-            <View style={styles.inputContainer}>
+            {/* 2. Landmark */}
+            <View style={styles.inputWrapper}>
+              <Building color="#8E8E93" size={18} style={styles.inputIcon} />
               <TextInput
                 style={styles.textInput}
-                placeholder="City"
+                placeholder="Add a nearby landmark (e.g., Near Gold's Gym)"
+                placeholderTextColor="#A1A1AA"
+                value={landmark}
+                onChangeText={setLandmark}
+              />
+            </View>
+
+            {/* 3. City / Town */}
+            <View style={styles.inputWrapper}>
+              <MapPin color="#8E8E93" size={18} style={styles.inputIcon} />
+              <TextInput
+                style={styles.textInput}
+                placeholder="City / Town"
                 placeholderTextColor="#A1A1AA"
                 value={city}
                 onChangeText={setCity}
               />
             </View>
 
-            <View style={styles.inputContainer}>
+            {/* 4. Pincode / Zip Code */}
+            <View style={styles.inputWrapper}>
+              <Text style={styles.pincodeLetterIcon}>P</Text>
               <TextInput
                 style={styles.textInput}
-                placeholder="Pincode"
+                placeholder="Pincode / Zip Code"
                 placeholderTextColor="#A1A1AA"
                 keyboardType="number-pad"
                 maxLength={6}
@@ -69,7 +137,9 @@ export default function AddressScreen() {
               />
             </View>
 
-            <View style={[styles.inputContainer, styles.inputContainerActive]}>
+            {/* 5. Phone Number */}
+            <View style={styles.inputWrapper}>
+              <Phone color="#8E8E93" size={18} style={styles.inputIcon} />
               <TextInput
                 style={styles.textInput}
                 placeholder="Phone Number"
@@ -80,15 +150,17 @@ export default function AddressScreen() {
               />
             </View>
           </View>
-        </ScrollView>
 
-        <View style={styles.bottomArea}>
+          {/* Action Button: SAVE ADDRESS */}
           <View style={styles.glowButtonWrapper}>
             <BouncyButton style={styles.saveBtn} onPress={handleFinish}>
-              <Text style={styles.saveBtnText}>Save Address</Text>
+              <Text style={styles.saveBtnText}>SAVE ADDRESS</Text>
             </BouncyButton>
           </View>
-        </View>
+        </ScrollView>
+
+        {/* Bottom Dock: ⚡ Order New Stack */}
+        <BottomDock onPress={() => {}} />
 
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -103,87 +175,162 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 24,
-    paddingVertical: 16,
+    paddingTop: 10,
     justifyContent: 'space-between',
   },
-  scrollInside: {
-    paddingTop: 10,
-    paddingBottom: 20,
+  scrollArea: {
+    paddingBottom: 10,
   },
-  logoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 32,
+  topLogoRow: {
+    alignSelf: 'flex-start',
+    marginTop: 6,
+    marginBottom: 24,
   },
-  logoText: {
+  title: {
     fontSize: 26,
     fontWeight: '900',
     color: '#111111',
-    letterSpacing: -0.5,
-  },
-  logoDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: Colors.yellow,
-    marginLeft: 3,
-    marginTop: 4,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '900',
-    color: '#111111',
     letterSpacing: 0.5,
-    marginBottom: 8,
+    marginBottom: 6,
   },
   subtitle: {
     fontSize: 14,
     color: '#8E8E93',
     lineHeight: 20,
-    marginBottom: 30,
+    marginBottom: 20,
   },
-  inputsStack: {
-    gap: 16,
-  },
-  inputContainer: {
-    backgroundColor: '#F8F9FA',
-    borderRadius: 18,
-    paddingHorizontal: 20,
-    height: 60,
+  mapCard: {
+    height: 145,
+    backgroundColor: '#F3F4F6',
+    borderRadius: 20,
+    overflow: 'hidden',
+    position: 'relative',
+    alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: 20,
     borderWidth: 1.5,
     borderColor: '#E5E5EA',
   },
-  inputContainerActive: {
-    borderColor: '#111111',
+  mapGridPattern: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#F3F4F6',
+  },
+  mapRoad1: {
+    position: 'absolute',
+    top: 20,
+    left: -20,
+    width: 280,
+    height: 24,
+    backgroundColor: '#FFFFFF',
+    transform: [{ rotate: '25deg' }],
+  },
+  mapRoad2: {
+    position: 'absolute',
+    bottom: 20,
+    left: 40,
+    width: 320,
+    height: 20,
+    backgroundColor: '#FFFFFF',
+    transform: [{ rotate: '-15deg' }],
+  },
+  mapRoad3: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 140,
+    width: 18,
     backgroundColor: '#FFFFFF',
   },
-  textInput: {
+  pinWrapper: {
+    position: 'absolute',
+    top: 24,
+    alignItems: 'center',
+  },
+  pinGlowBubble: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#D4FF00',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#D4FF00',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.8,
+    shadowRadius: 10,
+    elevation: 6,
+  },
+  pinpointBtn: {
+    position: 'absolute',
+    bottom: 14,
+    backgroundColor: 'rgba(100, 116, 139, 0.75)',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 14,
+  },
+  pinpointText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  appleMapsLabel: {
+    position: 'absolute',
+    bottom: 6,
+    left: 10,
+    fontSize: 10,
+    color: '#64748B',
+    fontWeight: '700',
+  },
+  formContainer: {
+    gap: 10,
+    marginBottom: 20,
+  },
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    paddingHorizontal: 14,
+    height: 52,
+    borderWidth: 1.5,
+    borderColor: '#E5E5EA',
+  },
+  inputIcon: {
+    marginRight: 10,
+  },
+  pincodeLetterIcon: {
     fontSize: 16,
+    fontWeight: '800',
+    color: '#8E8E93',
+    marginRight: 12,
+    marginLeft: 2,
+  },
+  textInput: {
+    flex: 1,
+    fontSize: 14,
     fontWeight: '700',
     color: '#111111',
   },
-  bottomArea: {
-    paddingBottom: 16,
-  },
   glowButtonWrapper: {
-    shadowColor: Colors.yellow,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.7,
-    shadowRadius: 18,
-    elevation: 8,
+    width: '100%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 6,
+    marginBottom: 10,
   },
   saveBtn: {
     backgroundColor: '#1C1C1E',
-    height: 58,
+    height: 56,
     borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
+    width: '100%',
   },
   saveBtnText: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '900',
-    letterSpacing: 0.5,
+    letterSpacing: 1,
   }
 });

@@ -2,23 +2,24 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppContext } from '../../context/AppContext';
-import { Colors } from '../../theme/colors';
+import ZingLogo from '../../components/ZingLogo';
+import BottomDock from '../../components/BottomDock';
 import BouncyButton from '../../components/BouncyButton';
 
 export default function GoalScreen({ navigation }) {
-  const { user, updateUser } = useAppContext();
+  const { updateUser } = useAppContext();
   const [selectedGoal, setSelectedGoal] = useState('muscle');
 
   const goals = [
-    { id: 'muscle', label: 'BUILD MUSCLE' },
-    { id: 'fat_loss', label: 'LOSE FAT' },
-    { id: 'endurance', label: 'INCREASE ENDURANCE' },
+    { id: 'muscle', label: 'BUILD MUSCLE', icon: '💪' },
+    { id: 'fat_loss', label: 'LOSE FAT', icon: '🔥' },
+    { id: 'endurance', label: 'INCREASE ENDURANCE', icon: '👟' },
   ];
 
   const handleNext = () => {
     if (selectedGoal) {
       updateUser({ goal: selectedGoal });
-      navigation.navigate('Address');
+      navigation.navigate('Personalize');
     }
   };
 
@@ -27,16 +28,18 @@ export default function GoalScreen({ navigation }) {
       <View style={styles.content}>
         
         <View style={styles.topArea}>
-          <View style={styles.logoRow}>
-            <Text style={styles.logoText}>Zing</Text>
-            <View style={styles.logoDot} />
+          {/* Top Logo: Zing */}
+          <View style={styles.topLogoRow}>
+            <ZingLogo size={28} />
           </View>
 
+          {/* Heading & Subtitle */}
           <Text style={styles.title}>YOUR FITNESS GOAL</Text>
           <Text style={styles.subtitle}>
-            We automatically calculate exact grams for {user?.name ? `${user.name}'s` : 'your'} 6 AM vacuum stack.
+            Select your primary objective to tailor your stack.
           </Text>
 
+          {/* Goal Options List (Exact Mockup Match) */}
           <View style={styles.optionsList}>
             {goals.map((g) => {
               const isSelected = selectedGoal === g.id;
@@ -47,6 +50,7 @@ export default function GoalScreen({ navigation }) {
                   onPress={() => setSelectedGoal(g.id)}
                   activeOpacity={0.85}
                 >
+                  <Text style={styles.goalIcon}>{g.icon}</Text>
                   <Text style={[styles.goalLabel, isSelected && styles.goalLabelActive]}>
                     {g.label}
                   </Text>
@@ -56,6 +60,7 @@ export default function GoalScreen({ navigation }) {
           </View>
         </View>
 
+        {/* Action Button & Bottom Dock */}
         <View style={styles.bottomArea}>
           <View style={styles.glowButtonWrapper}>
             <BouncyButton 
@@ -63,9 +68,11 @@ export default function GoalScreen({ navigation }) {
               onPress={handleNext}
               disabled={!selectedGoal}
             >
-              <Text style={styles.continueText}>Continue</Text>
+              <Text style={styles.continueText}>CONTINUE</Text>
             </BouncyButton>
           </View>
+
+          <BottomDock onPress={() => {}} />
         </View>
 
       </View>
@@ -81,33 +88,19 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 24,
-    paddingVertical: 16,
+    paddingTop: 10,
     justifyContent: 'space-between',
   },
   topArea: {
-    marginTop: 10,
+    width: '100%',
   },
-  logoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  topLogoRow: {
+    alignSelf: 'flex-start',
+    marginTop: 6,
     marginBottom: 32,
   },
-  logoText: {
-    fontSize: 26,
-    fontWeight: '900',
-    color: '#111111',
-    letterSpacing: -0.5,
-  },
-  logoDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: Colors.yellow,
-    marginLeft: 3,
-    marginTop: 4,
-  },
   title: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: '900',
     color: '#111111',
     letterSpacing: 0.5,
@@ -117,62 +110,67 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#8E8E93',
     lineHeight: 20,
-    marginBottom: 32,
+    marginBottom: 30,
   },
   optionsList: {
-    gap: 16,
+    gap: 14,
   },
   goalPill: {
-    backgroundColor: '#F8F9FA',
-    borderRadius: 18,
-    height: 68,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    height: 64,
     borderWidth: 1.5,
     borderColor: '#E5E5EA',
+    paddingHorizontal: 16,
   },
   goalPillActive: {
+    backgroundColor: '#E5E5EA',
     borderColor: '#111111',
-    backgroundColor: '#FFFFFF',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    elevation: 3,
+    borderWidth: 1.5,
+  },
+  goalIcon: {
+    fontSize: 18,
+    marginRight: 10,
   },
   goalLabel: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '900',
-    color: '#71717A',
+    color: '#111111',
     letterSpacing: 1,
   },
   goalLabelActive: {
     color: '#111111',
   },
   bottomArea: {
-    paddingBottom: 16,
+    width: '100%',
   },
   glowButtonWrapper: {
-    shadowColor: Colors.yellow,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.7,
-    shadowRadius: 18,
-    elevation: 8,
+    width: '100%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 6,
+    marginBottom: 6,
   },
   continueBtn: {
     backgroundColor: '#1C1C1E',
-    height: 58,
+    height: 56,
     borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
+    width: '100%',
   },
   continueBtnDisabled: {
     backgroundColor: '#C7C7CC',
   },
   continueText: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '900',
-    letterSpacing: 0.5,
+    letterSpacing: 1,
   }
 });
