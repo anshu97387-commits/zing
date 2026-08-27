@@ -2,13 +2,14 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Home, Wallet, User, Calculator, Users } from 'lucide-react-native';
+import { Home, Wallet, User, Users } from 'lucide-react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 
 import { AppProvider, useAppContext } from './src/context/AppContext';
 
-// Onboarding Screens
+// Auth & Onboarding Screens
+import PhoneAuthScreen from './src/screens/auth/PhoneAuthScreen';
 import NameScreen from './src/screens/onboarding/NameScreen';
 import GoalScreen from './src/screens/onboarding/GoalScreen';
 import AddressScreen from './src/screens/onboarding/AddressScreen';
@@ -76,6 +77,7 @@ function MainTabs() {
 function OnboardingStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
+      <Stack.Screen name="PhoneAuth" component={PhoneAuthScreen} />
       <Stack.Screen name="Name" component={NameScreen} />
       <Stack.Screen name="Goal" component={GoalScreen} />
       <Stack.Screen name="Address" component={AddressScreen} />
