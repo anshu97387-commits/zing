@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppContext } from '../../context/AppContext';
-import { ArrowRight } from 'lucide-react-native';
+import { ArrowRight, Sparkles } from 'lucide-react-native';
 import BouncyButton from '../../components/BouncyButton';
 
 export default function NameScreen({ navigation }) {
@@ -24,23 +24,29 @@ export default function NameScreen({ navigation }) {
           <Text style={styles.brandLogo}>ZING</Text>
           
           <Text style={styles.title}>What should we call you?</Text>
-          <Text style={styles.subtitle}>We'll personalize your daily drops.</Text>
+          <Text style={styles.subtitle}>We'll personalize your daily vacuum sealed morning fuel drops.</Text>
           
-          <TextInput
-            style={styles.input}
-            placeholder="Your Name"
-            placeholderTextColor="#8E8E93"
-            value={name}
-            onChangeText={setName}
-            autoFocus
-          />
+          <View style={styles.glassInputCard}>
+            <TextInput
+              style={styles.input}
+              placeholder="e.g. Arjun"
+              placeholderTextColor="#A1A1AA"
+              value={name}
+              onChangeText={setName}
+              autoFocus
+            />
+          </View>
 
           {name.trim().length > 0 && (
-            <View style={styles.identityHook}>
+            <View style={styles.identityHookGlass}>
+              <View style={styles.sparkleRow}>
+                <Sparkles color="#111111" size={14} fill="#FFC800" />
+                <Text style={styles.identityTag}>YOUR PERSONAL MORNING STACK</Text>
+              </View>
               <Text style={styles.identityText}>
-                {name.trim().toUpperCase()} KA 6AM STACK
+                {name.trim().toUpperCase()}'S 6AM STACK
               </Text>
-              <Text style={styles.identitySub}>Sounds like a plan.</Text>
+              <Text style={styles.identitySub}>Custom formulated • Delivered silently at 6:00 AM</Text>
             </View>
           )}
         </View>
@@ -50,8 +56,8 @@ export default function NameScreen({ navigation }) {
           onPress={handleNext}
           disabled={name.trim().length === 0}
         >
-          <Text style={styles.nextText}>Next</Text>
-          <ArrowRight color="#FFF" size={20} />
+          <Text style={styles.nextText}>Continue</Text>
+          <ArrowRight color="#111111" size={20} />
         </BouncyButton>
 
       </KeyboardAvoidingView>
@@ -72,74 +78,105 @@ const styles = StyleSheet.create({
   brandLogo: {
     fontSize: 28,
     fontWeight: '900',
-    color: '#000',
+    color: '#111111',
     letterSpacing: 2,
-    marginBottom: 24,
+    marginBottom: 20,
   },
   topArea: {
-    marginTop: 20,
+    marginTop: 10,
   },
   title: {
     fontSize: 32,
-    fontWeight: '700',
-    color: '#000',
+    fontWeight: '900',
+    color: '#111111',
     letterSpacing: -0.5,
   },
   subtitle: {
-    fontSize: 16,
-    color: '#8E8E93',
+    fontSize: 15,
+    color: '#71717A',
     marginTop: 8,
-    marginBottom: 40,
+    marginBottom: 32,
+    lineHeight: 22,
+  },
+  glassInputCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    borderWidth: 1.5,
+    borderColor: 'rgba(0,0,0,0.08)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 10,
+    elevation: 2,
   },
   input: {
-    fontSize: 24,
-    fontWeight: '600',
-    borderBottomWidth: 2,
-    borderBottomColor: '#000',
+    fontSize: 22,
+    fontWeight: '800',
     paddingVertical: 12,
-    color: '#000',
+    color: '#111111',
   },
-  identityHook: {
-    marginTop: 40,
-    backgroundColor: '#F2F2F7',
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'flex-start',
+  identityHookGlass: {
+    marginTop: 28,
+    backgroundColor: '#FFFDF5',
+    padding: 18,
+    borderRadius: 20,
+    borderWidth: 1.5,
+    borderColor: '#FFC800',
+    shadowColor: '#FFC800',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 3,
+  },
+  sparkleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  identityTag: {
+    fontSize: 10,
+    fontWeight: '900',
+    color: '#111111',
+    marginLeft: 4,
+    letterSpacing: 0.8,
   },
   identityText: {
-    fontSize: 16,
-    fontWeight: '800',
-    color: '#000',
-    letterSpacing: 1,
+    fontSize: 18,
+    fontWeight: '900',
+    color: '#111111',
+    letterSpacing: 0.5,
   },
   identitySub: {
-    fontSize: 14,
-    color: '#8E8E93',
+    fontSize: 12,
+    color: '#71717A',
     marginTop: 4,
+    fontWeight: '600',
   },
   nextBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#000',
+    backgroundColor: '#FFC800',
     height: 60,
-    borderRadius: 30, // Zepto pill shape
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.25,
-    shadowRadius: 15,
-    elevation: 10,
+    borderRadius: 30,
+    marginBottom: 16,
+    shadowColor: '#FFC800',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    elevation: 6,
   },
   nextBtnDisabled: {
-    backgroundColor: '#C7C7CC',
+    backgroundColor: '#E4E4E7',
     shadowOpacity: 0,
     elevation: 0,
   },
   nextText: {
-    color: '#FFF',
-    fontSize: 18,
-    fontWeight: '800',
+    color: '#111111',
+    fontSize: 17,
+    fontWeight: '900',
     marginRight: 8,
   }
 });

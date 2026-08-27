@@ -29,17 +29,24 @@ function MainTabs() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#ffffff',
+          backgroundColor: '#FFFFFF',
           borderTopWidth: 1,
-          borderTopColor: '#f1f1f1',
-          height: 80,
-          paddingBottom: 25,
+          borderTopColor: 'rgba(0,0,0,0.06)',
+          height: 82,
+          paddingBottom: 24,
           paddingTop: 10,
-          elevation: 0,
-          shadowOpacity: 0,
+          elevation: 8,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -4 },
+          shadowOpacity: 0.04,
+          shadowRadius: 12,
         },
-        tabBarActiveTintColor: '#000000',
-        tabBarInactiveTintColor: '#a1a1aa',
+        tabBarActiveTintColor: '#111111',
+        tabBarInactiveTintColor: '#A1A1AA',
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: '700',
+        },
       }}
     >
       <Tab.Screen 

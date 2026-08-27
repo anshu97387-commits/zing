@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppContext } from '../../context/AppContext';
-import { CheckCircle2, BellOff } from 'lucide-react-native';
+import { CheckCircle2, BellOff, ArrowRight } from 'lucide-react-native';
 import BouncyButton from '../../components/BouncyButton';
 
 export default function AddressScreen() {
@@ -12,7 +12,10 @@ export default function AddressScreen() {
 
   const handleFinish = () => {
     if (address.trim().length > 0) {
-      updateUser({ address: address.trim(), instructions: instructions.trim() });
+      updateUser({ 
+        address: address.trim(), 
+        instructions: instructions.trim() || 'Hang pouch on door handle (Silent 6 AM Drop)' 
+      });
       completeOnboarding();
     }
   };
@@ -22,38 +25,48 @@ export default function AddressScreen() {
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.content}>
         
         <View style={styles.topArea}>
-          <Text style={styles.title}>Where to drop it?</Text>
+          <Text style={styles.brandLogo}>ZING</Text>
+          <Text style={styles.title}>Where to drop your pouch?</Text>
+          <Text style={styles.subtitle}>Our delivery rider drops your vacuum pouch at 6:00 AM sharp.</Text>
           
-          <View style={styles.trustBadge}>
-            <BellOff color="#34C759" size={20} />
+          <View style={styles.trustGlassCard}>
+            <View style={styles.bellIconCircle}>
+              <BellOff color="#111111" size={20} />
+            </View>
             <View style={styles.trustTexts}>
-              <Text style={styles.trustTitle}>Bell nahi bajayega</Text>
-              <Text style={styles.trustSub}>100% silent delivery by 6:00 AM. Your neighbors (and dogs) won't wake up.</Text>
+              <Text style={styles.trustTitle}>Silent Delivery • Bell Mat Bajana</Text>
+              <Text style={styles.trustSub}>
+                100% quiet delivery before sunrise. Your family and neighbors won't be disturbed.
+              </Text>
             </View>
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Complete Address</Text>
-            <TextInput
-              style={[styles.input, styles.textArea]}
-              placeholder="House No, Society, Sector..."
-              placeholderTextColor="#8E8E93"
-              multiline
-              numberOfLines={3}
-              value={address}
-              onChangeText={setAddress}
-            />
+            <Text style={styles.inputLabel}>Complete Doorstep Address</Text>
+            <View style={styles.glassInputCard}>
+              <TextInput
+                style={[styles.input, styles.textArea]}
+                placeholder="House / Flat No, Tower, Society Name, Street..."
+                placeholderTextColor="#A1A1AA"
+                multiline
+                numberOfLines={3}
+                value={address}
+                onChangeText={setAddress}
+              />
+            </View>
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Delivery Instructions (Optional)</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="E.g., Hang it on the door handle"
-              placeholderTextColor="#8E8E93"
-              value={instructions}
-              onChangeText={setInstructions}
-            />
+            <Text style={styles.inputLabel}>Drop Instructions (Optional)</Text>
+            <View style={styles.glassInputCard}>
+              <TextInput
+                style={styles.input}
+                placeholder="e.g. Hang on door handle / gate hook"
+                placeholderTextColor="#A1A1AA"
+                value={instructions}
+                onChangeText={setInstructions}
+              />
+            </View>
           </View>
         </View>
 
@@ -62,8 +75,8 @@ export default function AddressScreen() {
           onPress={handleFinish}
           disabled={address.trim().length === 0}
         >
-          <Text style={styles.nextText}>Unlock My App</Text>
-          <CheckCircle2 color="#FFF" size={20} />
+          <Text style={styles.nextText}>Unlock My Zing App</Text>
+          <CheckCircle2 color="#111111" size={20} />
         </BouncyButton>
 
       </KeyboardAvoidingView>
@@ -81,84 +94,119 @@ const styles = StyleSheet.create({
     padding: 24,
     justifyContent: 'space-between',
   },
+  brandLogo: {
+    fontSize: 28,
+    fontWeight: '900',
+    color: '#111111',
+    letterSpacing: 2,
+    marginBottom: 20,
+  },
   topArea: {
-    marginTop: 40,
+    marginTop: 10,
   },
   title: {
     fontSize: 32,
-    fontWeight: '700',
-    color: '#000',
+    fontWeight: '900',
+    color: '#111111',
     letterSpacing: -0.5,
-    marginBottom: 24,
   },
-  trustBadge: {
+  subtitle: {
+    fontSize: 15,
+    color: '#71717A',
+    marginTop: 6,
+    marginBottom: 24,
+    lineHeight: 20,
+  },
+  trustGlassCard: {
     flexDirection: 'row',
-    backgroundColor: '#F2FFF5',
+    backgroundColor: '#FFFDF5',
     padding: 16,
-    borderRadius: 16,
-    marginBottom: 32,
+    borderRadius: 20,
+    marginBottom: 24,
+    borderWidth: 1.5,
+    borderColor: '#FFE082',
     alignItems: 'flex-start',
   },
+  bellIconCircle: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: '#FFF8E1',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
   trustTexts: {
-    marginLeft: 12,
     flex: 1,
   },
   trustTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#34C759',
-    marginBottom: 4,
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#111111',
+    marginBottom: 2,
   },
   trustSub: {
-    fontSize: 13,
-    color: '#4A4A4A',
-    lineHeight: 18,
+    fontSize: 12,
+    color: '#71717A',
+    lineHeight: 17,
   },
   inputGroup: {
-    marginBottom: 24,
+    marginBottom: 16,
   },
   inputLabel: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#8E8E93',
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#71717A',
     marginBottom: 8,
     textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  glassInputCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    borderWidth: 1.5,
+    borderColor: 'rgba(0,0,0,0.06)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.03,
+    shadowRadius: 8,
+    elevation: 2,
   },
   input: {
-    backgroundColor: '#F2F2F7',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    fontSize: 16,
-    color: '#000',
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#111111',
+    paddingVertical: 10,
   },
   textArea: {
-    height: 100,
+    height: 70,
     textAlignVertical: 'top',
   },
   nextBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#000',
+    backgroundColor: '#FFC800',
     height: 60,
-    borderRadius: 30, // Zepto pill shape
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.25,
-    shadowRadius: 15,
-    elevation: 10,
+    borderRadius: 30,
+    marginBottom: 16,
+    shadowColor: '#FFC800',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    elevation: 6,
   },
   nextBtnDisabled: {
-    backgroundColor: '#C7C7CC',
+    backgroundColor: '#E4E4E7',
     shadowOpacity: 0,
     elevation: 0,
   },
   nextText: {
-    color: '#FFF',
-    fontSize: 18,
-    fontWeight: '800',
+    color: '#111111',
+    fontSize: 17,
+    fontWeight: '900',
     marginRight: 8,
   }
 });

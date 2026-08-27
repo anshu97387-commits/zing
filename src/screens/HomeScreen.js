@@ -1,118 +1,153 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Switch, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { CheckCircle, Flame, Bike, Zap, Apple, PlusCircle } from 'lucide-react-native';
+import { Flame, Bike, Zap, PlusCircle, CheckCircle2, Moon, Sparkles } from 'lucide-react-native';
 import { useAppContext } from '../context/AppContext';
+import BouncyButton from '../components/BouncyButton';
 
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }) {
   const { user, isPaused, togglePause, coins, purchaseAddon, addons } = useAppContext();
   const [syncing, setSyncing] = useState(false);
   const [synced, setSynced] = useState(false);
 
   const STREAK_DAYS = 6;
 
-  const handleSync = () => {
+  const handleSyncHealth = () => {
+    if (synced) return;
     setSyncing(true);
     setTimeout(() => {
       setSyncing(false);
       setSynced(true);
-    }, 1500);
+      Alert.alert('🍏 Apple Health Synced', '36g Protein & 380 kcal successfully logged to your Health profile.');
+    }, 1200);
   };
 
   const handleAddon = (item) => {
     if (coins < item.cost) {
-      Alert.alert("Not enough Zing Coins", `You need ${item.cost} coins for ${item.name}. Refill by referring a friend!`);
+      Alert.alert(
+        "Low Zing Coins",
+        `You need ${item.cost} coins for ${item.name}. Refer friends in the 6 AM Club to earn 100 coins!`,
+        [
+          { text: "Cancel", style: "cancel" },
+          { text: "Earn Coins", onPress: () => navigation.navigate('Refer') }
+        ]
+      );
       return;
     }
     Alert.alert(
-      "Confirm Add-on",
-      `Add ${item.name} to tomorrow's drop for ${item.cost} Coins?`,
+      "Add to Tomorrow's Drop?",
+      `Add ${item.name} for ${item.cost} Zing Coins? Rider will pack it in your pouch tonight.`,
       [
         { text: "Cancel", style: "cancel" },
-        { text: "Confirm", onPress: () => purchaseAddon(item) }
+        { 
+          text: "Confirm Add-on", 
+          onPress: () => {
+            purchaseAddon(item);
+            Alert.alert("Added! ✨", `${item.name} is scheduled for tomorrow's 6:00 AM drop.`);
+          }
+        }
       ]
     );
   };
 
   const availableAddons = [
-    { id: 'creatine', name: '5g Creatine', cost: 50, icon: '⚡' },
-    { id: 'dark_choc', name: 'Dark Choc Chunks', cost: 30, icon: '🍫' }
+    { id: 'creatine', name: '5g Pure Creatine', cost: 50, icon: '⚡', desc: 'Strength & Power' },
+    { id: 'dark_choc', name: 'Dark Choc Chunks', cost: 30, icon: '🍫', desc: 'Antioxidants & Taste' }
   ];
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         
-        {/* Header - Streak Ring Focus */}
-        <View style={styles.header}>
-          <View style={styles.headerText}>
-            <Text style={styles.greeting}>Good evening,</Text>
-            <Text style={styles.userName}>{user?.name || 'Anshu'}</Text>
+        {/* Top Header & Streak Ring Glass Card */}
+        <View style={styles.headerGlassCard}>
+          <View style={styles.headerTextGroup}>
+            <View style={styles.tagRow}>
+              <View style={styles.livePulse} />
+              <Text style={styles.tagText}>MORNING FUEL • 6:00 AM</Text>
+            </View>
+            <Text style={styles.userName}>{user?.name ? `${user.name}'s Stack` : "Arjun's Stack"}</Text>
+            <Text style={styles.userSubtitle}>Vacuum sealed fresh • 0% Spoilage</Text>
           </View>
-          
-          <View style={styles.streakRingContainer}>
-            <View style={styles.streakRing}>
-              <Flame color="#FFB800" size={24} />
+
+          <View style={styles.streakBadgeWrapper}>
+            <View style={styles.streakGlowCircle}>
+              <Flame color="#111111" size={24} fill="#FFC800" />
               <Text style={styles.streakNumber}>{STREAK_DAYS}</Text>
             </View>
-            <Text style={styles.streakLabel}>Days Streak</Text>
+            <Text style={styles.streakLabel}>Day Streak</Text>
           </View>
         </View>
 
-        {/* Drop Alert Notification & Pause */}
-        <View style={[styles.dropAlertCard, isPaused && styles.dropAlertPaused]}>
-          <View style={styles.dropAlertTop}>
-            <View style={[styles.dropAlertIcon, isPaused && { backgroundColor: 'rgba(0,0,0,0.1)' }]}>
-              <Bike color={isPaused ? "#000" : "#FFF"} size={20} />
+        {/* 6 AM Drop Status & Vacation Mode Toggle */}
+        <View style={[styles.dropCard, isPaused && styles.dropCardPaused]}>
+          <View style={styles.dropTopRow}>
+            <View style={[styles.dropIconBox, isPaused && styles.dropIconBoxPaused]}>
+              {isPaused ? <Moon color="#71717A" size={22} /> : <Bike color="#111111" size={22} />}
             </View>
-            <View style={styles.dropAlertTexts}>
-              <Text style={[styles.dropAlertTitle, isPaused && { color: '#000' }]}>
-                {isPaused ? "Tomorrow's Drop Paused" : "Tomorrow's Drop Scheduled"}
+            <View style={styles.dropDetails}>
+              <Text style={[styles.dropTitle, isPaused && styles.textMuted]}>
+                {isPaused ? "Drop Paused (Vacation Mode)" : "Tomorrow's Drop Scheduled"}
               </Text>
-              <Text style={[styles.dropAlertSub, isPaused && { color: '#4A4A4A' }]}>
-                {isPaused ? "Wallet balance saved." : "Rider Rahul will deliver silently by 6:00 AM."}
+              <Text style={styles.dropSub}>
+                {isPaused 
+                  ? "Wallet balance preserved. No pack will be sent." 
+                  : "Silent doorstep drop by 6:00 AM sharp."}
               </Text>
             </View>
           </View>
-          
-          {/* Pause Toggle */}
-          <View style={styles.pauseRow}>
-            <Text style={[styles.pauseText, isPaused && { color: '#000' }]}>Vacation Mode (Pause)</Text>
+
+          {/* Toggle Action */}
+          <View style={styles.pauseToggleRow}>
+            <View style={styles.pauseInfo}>
+              <Text style={[styles.pauseTitle, isPaused && styles.textMuted]}>Vacation Mode</Text>
+              <Text style={styles.pauseSub}>Pause without losing subscription days</Text>
+            </View>
             <Switch 
               value={isPaused} 
               onValueChange={togglePause} 
-              trackColor={{ false: '#3A3A3C', true: '#34C759' }}
+              trackColor={{ false: '#E4E4E7', true: '#FFC800' }}
               thumbColor="#FFFFFF"
             />
           </View>
         </View>
 
-        {/* Monday Drop FOMO */}
+        {/* Monday Drop Scarcity Banner (FOMO) */}
         {!isPaused && (
-          <View style={styles.mondayDropCard}>
-            <View style={styles.mondayDropHeader}>
-              <View style={styles.mondayDropTitleRow}>
-                <Zap color="#FFB800" size={18} fill="#FFB800" />
-                <Text style={styles.mondayDropTitle}>Monday Drop</Text>
+          <TouchableOpacity 
+            style={styles.scarcityCard} 
+            activeOpacity={0.9} 
+            onPress={() => navigation.navigate('Pass')}
+          >
+            <View style={styles.scarcityTop}>
+              <View style={styles.scarcityBadge}>
+                <Zap color="#111111" size={14} fill="#111111" />
+                <Text style={styles.scarcityBadgeText}>MONDAY DROP</Text>
               </View>
-              <Text style={styles.mondayDropSpots}>47/200 Spots</Text>
+              <Text style={styles.spotsCount}>47 / 200 Slots Left</Text>
             </View>
-            
-            <View style={styles.progressBarBg}>
-              <View style={[styles.progressBarFill, { width: '85%' }]} />
+
+            <View style={styles.progressBarTrack}>
+              <View style={[styles.progressBarFill, { width: '82%' }]} />
             </View>
-            <Text style={styles.mondayDropSub}>Secure your spot before it sells out.</Text>
-          </View>
+            <Text style={styles.scarcityDesc}>Pre-pack slots filling fast in your sector. Priority to pass holders.</Text>
+          </TouchableOpacity>
         )}
 
-        {/* Zing Coins Add-ons */}
+        {/* Enhance Drop with Zing Coins */}
         {!isPaused && (
-          <>
+          <View style={styles.sectionContainer}>
             <View style={styles.sectionHeaderRow}>
-              <Text style={styles.sectionTitle}>Enhance Tomorrow's Drop</Text>
-              <Text style={styles.coinsBalance}>🪙 {coins}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Sparkles color="#FFB800" size={20} />
+                <Text style={styles.sectionTitle}>Add-ons for Tomorrow</Text>
+              </View>
+              <View style={styles.coinBalanceBadge}>
+                <Text style={styles.coinsAmount}>🪙 {coins} Coins</Text>
+              </View>
             </View>
-            <View style={styles.addonsContainer}>
+
+            <View style={styles.addonsGrid}>
               {availableAddons.map(addon => {
                 const isAdded = addons.find(a => a.id === addon.id);
                 return (
@@ -122,47 +157,82 @@ export default function HomeScreen() {
                     onPress={() => !isAdded && handleAddon(addon)}
                     activeOpacity={0.8}
                   >
-                    <Text style={styles.addonIcon}>{addon.icon}</Text>
-                    <View style={styles.addonInfo}>
-                      <Text style={styles.addonName}>{addon.name}</Text>
-                      <Text style={styles.addonCost}>{isAdded ? 'Added' : `${addon.cost} Coins`}</Text>
+                    <Text style={styles.addonEmoji}>{addon.icon}</Text>
+                    <View style={styles.addonTextColumn}>
+                      <Text style={styles.addonTitle}>{addon.name}</Text>
+                      <Text style={styles.addonSub}>{addon.desc}</Text>
                     </View>
-                    {!isAdded && <PlusCircle color="#000" size={20} />}
-                    {isAdded && <CheckCircle color="#34C759" size={20} />}
+                    <View style={styles.addonActionBox}>
+                      {isAdded ? (
+                        <CheckCircle2 color="#34C759" size={22} />
+                      ) : (
+                        <View style={styles.costBadge}>
+                          <Text style={styles.costBadgeText}>{addon.cost}c</Text>
+                        </View>
+                      )}
+                    </View>
                   </TouchableOpacity>
                 );
               })}
             </View>
-          </>
+          </View>
         )}
 
-        {/* Daily Ingredients Quick View */}
-        <Text style={styles.sectionTitle}>Your Formula ({user?.goal === 'fat_loss' ? 'Cutting' : user?.goal === 'muscle' ? 'Bulking' : 'Recomp'})</Text>
-        <View style={styles.ingredientsCard}>
-          <IngredientRow icon="💪" name="Whey Protein" gram={user?.goal === 'muscle' ? '36g' : '30g'} />
-          <IngredientRow icon="🌾" name="Rolled Oats" gram={user?.goal === 'fat_loss' ? '30g' : '50g'} />
-          <IngredientRow icon="🌱" name="Chia Seeds" gram="5g" />
-          {user?.goal !== 'fat_loss' && (
-            <IngredientRow icon="🥜" name="Peanut Butter" gram="10g" />
-          )}
-          {addons.map(addon => (
-            <IngredientRow key={addon.id} icon={addon.icon} name={addon.name} gram="Added" />
-          ))}
+        {/* Active Daily Formula */}
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionTitle}>
+            Daily Nutrition Stack ({user?.goal === 'fat_loss' ? 'Fat Loss / Cut' : user?.goal === 'muscle' ? 'Muscle Bulking' : 'Maintain'})
+          </Text>
 
-          {/* Apple Health Sync Button */}
-          <TouchableOpacity 
-            style={[styles.healthSyncBtn, synced && styles.healthSyncSuccess]} 
-            onPress={handleSync}
-            disabled={syncing || synced}
-          >
-            {synced ? (
-              <Text style={styles.healthSyncTextSuccess}>✅ Macros Synced</Text>
-            ) : (
-              <>
-                <Text style={styles.healthSyncText}>{syncing ? 'Syncing...' : 'Sync to Apple Health'}</Text>
-              </>
+          <View style={styles.formulaGlassCard}>
+            <IngredientRow 
+              icon="💪" 
+              name="Whey Isolate Protein" 
+              desc="Fast-acting amino profile"
+              gram={user?.goal === 'muscle' ? '36g' : '30g'} 
+            />
+            <IngredientRow 
+              icon="🌾" 
+              name="Rolled Oats" 
+              desc="Slow burning complex carbs"
+              gram={user?.goal === 'fat_loss' ? '30g' : '50g'} 
+            />
+            <IngredientRow 
+              icon="🌱" 
+              name="Chia Seeds" 
+              desc="Omega-3 & fiber boost"
+              gram="5g" 
+            />
+            {user?.goal !== 'fat_loss' && (
+              <IngredientRow 
+                icon="🥜" 
+                name="Roasted Peanut Butter" 
+                desc="Healthy fats & clean calories"
+                gram="10g" 
+              />
             )}
-          </TouchableOpacity>
+            {addons.map(addon => (
+              <IngredientRow 
+                key={addon.id} 
+                icon={addon.icon} 
+                name={addon.name} 
+                desc="Custom add-on included"
+                gram="Added" 
+                highlight={true}
+              />
+            ))}
+
+            {/* Apple Health 1-Tap Sync Button */}
+            <BouncyButton 
+              style={[styles.healthSyncBtn, synced && styles.healthSyncBtnDone]} 
+              onPress={handleSyncHealth}
+              disabled={syncing || synced}
+            >
+              <Text style={[styles.healthSyncBtnText, synced && styles.healthSyncBtnTextDone]}>
+                {syncing ? "Syncing with Apple Health..." : synced ? "✅ Macros Synced to Apple Health" : "🍏 Sync Macros to Apple Health"}
+              </Text>
+            </BouncyButton>
+          </View>
         </View>
 
       </ScrollView>
@@ -170,12 +240,16 @@ export default function HomeScreen() {
   );
 }
 
-const IngredientRow = ({ icon, name, gram }) => (
-  <View style={styles.ingredientRow}>
-    <View style={styles.ingLeft}>
-      <Text style={styles.ingName}>{icon}  {name}</Text>
+const IngredientRow = ({ icon, name, desc, gram, highlight }) => (
+  <View style={[styles.ingRow, highlight && styles.ingRowHighlight]}>
+    <Text style={styles.ingIcon}>{icon}</Text>
+    <View style={styles.ingTextCol}>
+      <Text style={styles.ingName}>{name}</Text>
+      <Text style={styles.ingDesc}>{desc}</Text>
     </View>
-    <Text style={styles.ingGram}>{gram}</Text>
+    <View style={styles.gramBadge}>
+      <Text style={[styles.gramText, highlight && styles.gramTextHighlight]}>{gram}</Text>
+    </View>
   </View>
 );
 
@@ -185,268 +259,379 @@ const styles = StyleSheet.create({
     backgroundColor: '#FAFAFA',
   },
   scrollContent: {
-    paddingHorizontal: 24,
-    paddingTop: 20,
+    paddingHorizontal: 20,
+    paddingTop: 16,
     paddingBottom: 40,
   },
-  header: {
+  headerGlassCard: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 32,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 20,
+    marginBottom: 18,
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.05)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 12,
+    elevation: 3,
   },
-  headerText: {
+  headerTextGroup: {
     flex: 1,
   },
-  greeting: {
-    fontSize: 16,
-    color: '#8E8E93',
-    marginBottom: 4,
+  tagRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  livePulse: {
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+    backgroundColor: '#FFC800',
+    marginRight: 6,
+  },
+  tagText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#71717A',
+    letterSpacing: 1,
   },
   userName: {
-    fontSize: 32,
-    fontWeight: '800',
-    color: '#000',
+    fontSize: 26,
+    fontWeight: '900',
+    color: '#111111',
     letterSpacing: -0.5,
   },
-  streakRingContainer: {
+  userSubtitle: {
+    fontSize: 13,
+    color: '#8E8E93',
+    marginTop: 2,
+    fontWeight: '500',
+  },
+  streakBadgeWrapper: {
     alignItems: 'center',
   },
-  streakRing: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    borderWidth: 4,
-    borderColor: '#FFB800',
+  streakGlowCircle: {
+    width: 62,
+    height: 62,
+    borderRadius: 31,
+    backgroundColor: '#FFFDF5',
+    borderWidth: 2.5,
+    borderColor: '#FFC800',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 4,
+    shadowColor: '#FFC800',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
   streakNumber: {
-    fontSize: 18,
-    fontWeight: '800',
-    color: '#FFB800',
+    fontSize: 14,
+    fontWeight: '900',
+    color: '#111111',
+    marginTop: -2,
   },
   streakLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#8E8E93',
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#71717A',
+    marginTop: 4,
   },
-  dropAlertCard: {
-    backgroundColor: '#000',
-    borderRadius: 20,
-    padding: 16,
-    marginBottom: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  dropAlertPaused: {
-    backgroundColor: '#F2F2F7',
+  dropCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 20,
+    marginBottom: 18,
     borderWidth: 1,
-    borderColor: '#E5E5EA',
-    shadowOpacity: 0,
-    elevation: 0,
+    borderColor: 'rgba(0,0,0,0.06)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.05,
+    shadowRadius: 14,
+    elevation: 3,
   },
-  dropAlertTop: {
+  dropCardPaused: {
+    backgroundColor: '#F4F4F5',
+    borderColor: '#E4E4E7',
+  },
+  dropTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 16,
   },
-  dropAlertIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+  dropIconBox: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: '#FFF8E1',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  dropAlertTexts: {
-    marginLeft: 12,
+  dropIconBoxPaused: {
+    backgroundColor: '#E4E4E7',
+  },
+  dropDetails: {
+    marginLeft: 14,
     flex: 1,
   },
-  dropAlertTitle: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#FFF',
-    marginBottom: 2,
+  dropTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#111111',
   },
-  dropAlertSub: {
+  dropSub: {
     fontSize: 13,
-    color: '#A1A1AA',
+    color: '#71717A',
+    marginTop: 2,
+    lineHeight: 18,
   },
-  pauseRow: {
+  textMuted: {
+    color: '#71717A',
+  },
+  pauseToggleRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.1)',
-    paddingTop: 12,
+    borderTopColor: '#F4F4F5',
+    paddingTop: 14,
   },
-  pauseText: {
+  pauseInfo: {
+    flex: 1,
+  },
+  pauseTitle: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#FFF',
-  },
-  sectionHeaderRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  coinsBalance: {
-    fontSize: 16,
     fontWeight: '700',
-    color: '#000',
+    color: '#111111',
   },
-  addonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 32,
-    gap: 12,
-  },
-  addonCard: {
-    flex: 1,
-    backgroundColor: '#FFF',
-    borderRadius: 16,
-    padding: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
-    shadowRadius: 4,
-    elevation: 2,
-    borderWidth: 1,
-    borderColor: 'transparent',
-  },
-  addonCardActive: {
-    borderColor: '#34C759',
-    backgroundColor: '#F2FFF5',
-  },
-  addonIcon: {
-    fontSize: 20,
-  },
-  addonInfo: {
-    marginLeft: 10,
-    flex: 1,
-  },
-  addonName: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#000',
-  },
-  addonCost: {
-    fontSize: 11,
+  pauseSub: {
+    fontSize: 12,
     color: '#8E8E93',
     marginTop: 2,
   },
-  mondayDropCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 20,
-    marginBottom: 32,
+  scarcityCard: {
+    backgroundColor: '#111111',
+    borderRadius: 22,
+    padding: 18,
+    marginBottom: 20,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.03,
-    shadowRadius: 12,
-    elevation: 2,
-    borderWidth: 1,
-    borderColor: '#FFF8E1',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 6,
   },
-  mondayDropHeader: {
+  scarcityTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 12,
   },
-  mondayDropTitleRow: {
+  scarcityBadge: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: '#FFC800',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
   },
-  mondayDropTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#FFB800',
-    marginLeft: 6,
+  scarcityBadgeText: {
+    fontSize: 11,
+    fontWeight: '900',
+    color: '#111111',
+    marginLeft: 4,
+    letterSpacing: 0.5,
   },
-  mondayDropSpots: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#000',
+  spotsCount: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#FFFFFF',
   },
-  progressBarBg: {
-    height: 8,
-    backgroundColor: '#F2F2F7',
+  progressBarTrack: {
+    height: 7,
+    backgroundColor: 'rgba(255,255,255,0.2)',
     borderRadius: 4,
     marginBottom: 10,
     overflow: 'hidden',
   },
   progressBarFill: {
     height: '100%',
-    backgroundColor: '#FFB800',
+    backgroundColor: '#FFC800',
     borderRadius: 4,
   },
-  mondayDropSub: {
-    fontSize: 13,
-    color: '#8E8E93',
+  scarcityDesc: {
+    fontSize: 12,
+    color: '#A1A1AA',
+    lineHeight: 16,
+  },
+  sectionContainer: {
+    marginBottom: 24,
+  },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 14,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#000',
-    marginBottom: 16,
+    fontSize: 17,
+    fontWeight: '800',
+    color: '#111111',
+    marginLeft: 4,
     letterSpacing: -0.3,
   },
-  ingredientsCard: {
+  coinBalanceBadge: {
+    backgroundColor: '#FFF8E1',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#FFE082',
+  },
+  coinsAmount: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#111111',
+  },
+  addonsGrid: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  addonCard: {
+    flex: 1,
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
-    padding: 20,
+    padding: 14,
+    borderWidth: 1.5,
+    borderColor: 'rgba(0,0,0,0.06)',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.03,
     shadowRadius: 8,
     elevation: 2,
   },
-  ingredientRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 12,
+  addonCardActive: {
+    borderColor: '#FFC800',
+    backgroundColor: '#FFFDF5',
   },
-  ingLeft: {
+  addonEmoji: {
+    fontSize: 24,
+    marginBottom: 8,
+  },
+  addonTextColumn: {
+    marginBottom: 10,
+  },
+  addonTitle: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#111111',
+  },
+  addonSub: {
+    fontSize: 11,
+    color: '#8E8E93',
+    marginTop: 2,
+  },
+  addonActionBox: {
+    alignItems: 'flex-start',
+  },
+  costBadge: {
+    backgroundColor: '#111111',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 10,
+  },
+  costBadgeText: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#FFC800',
+  },
+  formulaGlassCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 18,
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.06)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 10,
+    elevation: 3,
+  },
+  ingRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F4F4F5',
+  },
+  ingRowHighlight: {
+    backgroundColor: '#FFFDF5',
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    marginVertical: 4,
+  },
+  ingIcon: {
+    fontSize: 20,
+    marginRight: 12,
+  },
+  ingTextCol: {
+    flex: 1,
   },
   ingName: {
-    fontSize: 16,
-    color: '#000',
-    fontWeight: '500',
-  },
-  ingGram: {
-    fontSize: 16,
-    color: '#000',
+    fontSize: 15,
     fontWeight: '700',
+    color: '#111111',
+  },
+  ingDesc: {
+    fontSize: 12,
+    color: '#8E8E93',
+    marginTop: 2,
+  },
+  gramBadge: {
+    backgroundColor: '#F4F4F5',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 10,
+  },
+  gramText: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#111111',
+  },
+  gramTextHighlight: {
+    color: '#D97706',
   },
   healthSyncBtn: {
-    marginTop: 16,
-    backgroundColor: '#000',
-    paddingVertical: 14,
-    borderRadius: 12,
+    backgroundColor: '#111111',
+    borderRadius: 18,
+    paddingVertical: 16,
     alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 4,
   },
-  healthSyncSuccess: {
+  healthSyncBtnDone: {
     backgroundColor: '#F2FFF5',
+    borderWidth: 1,
+    borderColor: '#34C759',
   },
-  healthSyncText: {
-    color: '#FFF',
+  healthSyncBtnText: {
+    color: '#FFFFFF',
     fontSize: 15,
-    fontWeight: '600',
+    fontWeight: '800',
   },
-  healthSyncTextSuccess: {
+  healthSyncBtnTextDone: {
     color: '#34C759',
     fontSize: 15,
-    fontWeight: '600',
+    fontWeight: '800',
   }
 });
