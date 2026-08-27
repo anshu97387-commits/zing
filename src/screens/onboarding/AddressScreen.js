@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, TextInput, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppContext } from '../../context/AppContext';
 import { CheckCircle2, BellOff, ArrowRight } from 'lucide-react-native';
@@ -24,14 +24,14 @@ export default function AddressScreen() {
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.content}>
         
-        <View style={styles.topArea}>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollInside}>
           <Text style={styles.brandLogo}>ZING</Text>
           <Text style={styles.title}>Where to drop your pouch?</Text>
           <Text style={styles.subtitle}>Our delivery rider drops your vacuum pouch at 6:00 AM sharp.</Text>
           
           <View style={styles.trustGlassCard}>
             <View style={styles.bellIconCircle}>
-              <BellOff color="#111111" size={20} />
+              <BellOff color="#111111" size={18} />
             </View>
             <View style={styles.trustTexts}>
               <Text style={styles.trustTitle}>Silent Delivery • Bell Mat Bajana</Text>
@@ -68,16 +68,18 @@ export default function AddressScreen() {
               />
             </View>
           </View>
-        </View>
+        </ScrollView>
 
-        <BouncyButton 
-          style={[styles.nextBtn, address.trim().length === 0 && styles.nextBtnDisabled]} 
-          onPress={handleFinish}
-          disabled={address.trim().length === 0}
-        >
-          <Text style={styles.nextText}>Unlock My Zing App</Text>
-          <CheckCircle2 color="#111111" size={20} />
-        </BouncyButton>
+        <View style={styles.bottomBar}>
+          <BouncyButton 
+            style={[styles.nextBtn, address.trim().length === 0 && styles.nextBtnDisabled]} 
+            onPress={handleFinish}
+            disabled={address.trim().length === 0}
+          >
+            <Text style={styles.nextText}>Unlock My Zing App</Text>
+            <CheckCircle2 color="#111111" size={20} />
+          </BouncyButton>
+        </View>
 
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -91,56 +93,57 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 24,
+    paddingHorizontal: 20,
     justifyContent: 'space-between',
   },
+  scrollInside: {
+    paddingTop: 16,
+    paddingBottom: 20,
+  },
   brandLogo: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: '900',
     color: '#111111',
     letterSpacing: 2,
-    marginBottom: 20,
-  },
-  topArea: {
-    marginTop: 10,
+    marginBottom: 12,
   },
   title: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: '900',
     color: '#111111',
     letterSpacing: -0.5,
   },
   subtitle: {
-    fontSize: 15,
+    fontSize: 14,
     color: '#71717A',
     marginTop: 6,
-    marginBottom: 24,
+    marginBottom: 18,
     lineHeight: 20,
   },
   trustGlassCard: {
     flexDirection: 'row',
     backgroundColor: '#FFFDF5',
-    padding: 16,
-    borderRadius: 20,
-    marginBottom: 24,
+    padding: 14,
+    borderRadius: 18,
+    marginBottom: 18,
     borderWidth: 1.5,
     borderColor: '#FFE082',
     alignItems: 'flex-start',
   },
   bellIconCircle: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
     backgroundColor: '#FFF8E1',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    marginRight: 10,
   },
   trustTexts: {
     flex: 1,
   },
   trustTitle: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '800',
     color: '#111111',
     marginBottom: 2,
@@ -148,30 +151,30 @@ const styles = StyleSheet.create({
   trustSub: {
     fontSize: 12,
     color: '#71717A',
-    lineHeight: 17,
+    lineHeight: 16,
   },
   inputGroup: {
-    marginBottom: 16,
+    marginBottom: 14,
   },
   inputLabel: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '800',
     color: '#71717A',
-    marginBottom: 8,
+    marginBottom: 6,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   glassInputCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 18,
+    borderRadius: 16,
     paddingHorizontal: 16,
-    paddingVertical: 6,
+    paddingVertical: 4,
     borderWidth: 1.5,
     borderColor: 'rgba(0,0,0,0.06)',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.03,
-    shadowRadius: 8,
+    shadowRadius: 6,
     elevation: 2,
   },
   input: {
@@ -181,17 +184,20 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   textArea: {
-    height: 70,
+    height: 65,
     textAlignVertical: 'top',
+  },
+  bottomBar: {
+    paddingBottom: 20,
+    paddingTop: 10,
   },
   nextBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#FFC800',
-    height: 60,
-    borderRadius: 30,
-    marginBottom: 16,
+    height: 58,
+    borderRadius: 29,
     shadowColor: '#FFC800',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.35,

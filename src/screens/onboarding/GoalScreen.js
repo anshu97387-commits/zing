@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppContext } from '../../context/AppContext';
-import { ArrowRight, Check, Dumbbell, Scale, Flame } from 'lucide-react-native';
+import { ArrowRight, Check } from 'lucide-react-native';
 import BouncyButton from '../../components/BouncyButton';
 
 export default function GoalScreen({ navigation }) {
@@ -13,7 +13,7 @@ export default function GoalScreen({ navigation }) {
     { 
       id: 'muscle', 
       title: 'Muscle Gain / Bulking', 
-      desc: 'High protein & oats formula (36g Whey + 50g Oats + PB)', 
+      desc: 'High protein & oats (36g Whey + 50g Oats + PB)', 
       icon: '💪' 
     },
     { 
@@ -41,11 +41,11 @@ export default function GoalScreen({ navigation }) {
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         
-        <View style={styles.topArea}>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollInside}>
           <Text style={styles.brandLogo}>ZING</Text>
           <Text style={styles.title}>What's your goal?</Text>
           <Text style={styles.subtitle}>
-            We automatically calculate the exact grams for {user.name || 'your'}'s daily 6 AM stack.
+            We automatically calculate exact grams for {user?.name ? `${user.name}'s` : 'your'} daily 6 AM stack.
           </Text>
           
           <View style={styles.optionsContainer}>
@@ -56,29 +56,32 @@ export default function GoalScreen({ navigation }) {
                 onPress={() => setSelectedGoal(g.id)}
                 activeOpacity={0.85}
               >
-                <View style={styles.cardHeaderRow}>
+                <View style={styles.cardLeft}>
                   <Text style={styles.cardEmoji}>{g.icon}</Text>
-                  {selectedGoal === g.id && (
-                    <View style={styles.checkIcon}>
-                      <Check color="#111111" size={14} />
-                    </View>
-                  )}
+                  <View style={styles.cardTextCol}>
+                    <Text style={styles.cardTitle}>{g.title}</Text>
+                    <Text style={styles.cardDesc}>{g.desc}</Text>
+                  </View>
                 </View>
-                <Text style={styles.cardTitle}>{g.title}</Text>
-                <Text style={styles.cardDesc}>{g.desc}</Text>
+
+                <View style={[styles.radioCircle, selectedGoal === g.id && styles.radioCircleActive]}>
+                  {selectedGoal === g.id && <Check color="#111111" size={13} strokeWidth={3} />}
+                </View>
               </TouchableOpacity>
             ))}
           </View>
-        </View>
+        </ScrollView>
 
-        <BouncyButton 
-          style={[styles.nextBtn, !selectedGoal && styles.nextBtnDisabled]} 
-          onPress={handleNext}
-          disabled={!selectedGoal}
-        >
-          <Text style={styles.nextText}>Continue</Text>
-          <ArrowRight color="#111111" size={20} />
-        </BouncyButton>
+        <View style={styles.bottomBar}>
+          <BouncyButton 
+            style={[styles.nextBtn, !selectedGoal && styles.nextBtnDisabled]} 
+            onPress={handleNext}
+            disabled={!selectedGoal}
+          >
+            <Text style={styles.nextText}>Continue</Text>
+            <ArrowRight color="#111111" size={20} />
+          </BouncyButton>
+        </View>
 
       </View>
     </SafeAreaView>
@@ -92,45 +95,49 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 24,
+    paddingHorizontal: 20,
     justifyContent: 'space-between',
   },
+  scrollInside: {
+    paddingTop: 16,
+    paddingBottom: 20,
+  },
   brandLogo: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: '900',
     color: '#111111',
     letterSpacing: 2,
-    marginBottom: 20,
-  },
-  topArea: {
-    marginTop: 10,
+    marginBottom: 12,
   },
   title: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: '900',
     color: '#111111',
     letterSpacing: -0.5,
   },
   subtitle: {
-    fontSize: 15,
+    fontSize: 14,
     color: '#71717A',
-    marginTop: 8,
-    marginBottom: 28,
-    lineHeight: 22,
+    marginTop: 6,
+    marginBottom: 20,
+    lineHeight: 20,
   },
   optionsContainer: {
-    gap: 14,
+    gap: 12,
   },
   card: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     backgroundColor: '#FFFFFF',
-    borderRadius: 22,
-    padding: 20,
+    borderRadius: 20,
+    padding: 16,
     borderWidth: 1.5,
     borderColor: 'rgba(0,0,0,0.06)',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.03,
-    shadowRadius: 10,
+    shadowRadius: 8,
     elevation: 2,
   },
   cardActive: {
@@ -138,42 +145,52 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFDF5',
     borderWidth: 2,
   },
-  cardHeaderRow: {
+  cardLeft: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    flex: 1,
+    paddingRight: 10,
   },
   cardEmoji: {
     fontSize: 24,
+    marginRight: 14,
   },
-  checkIcon: {
+  cardTextCol: {
+    flex: 1,
+  },
+  cardTitle: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#111111',
+    marginBottom: 2,
+  },
+  cardDesc: {
+    fontSize: 12,
+    color: '#71717A',
+    lineHeight: 16,
+  },
+  radioCircle: {
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: '#FFC800',
+    backgroundColor: '#F4F4F5',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  cardTitle: {
-    fontSize: 17,
-    fontWeight: '800',
-    color: '#111111',
-    marginBottom: 4,
+  radioCircleActive: {
+    backgroundColor: '#FFC800',
   },
-  cardDesc: {
-    fontSize: 13,
-    color: '#71717A',
-    lineHeight: 18,
+  bottomBar: {
+    paddingBottom: 20,
+    paddingTop: 10,
   },
   nextBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#FFC800',
-    height: 60,
-    borderRadius: 30,
-    marginBottom: 16,
+    height: 58,
+    borderRadius: 29,
     shadowColor: '#FFC800',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.35,
