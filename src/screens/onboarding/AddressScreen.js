@@ -2,22 +2,24 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppContext } from '../../context/AppContext';
-import { CheckCircle2, BellOff, ArrowRight } from 'lucide-react-native';
+import { Colors } from '../../theme/colors';
 import BouncyButton from '../../components/BouncyButton';
 
 export default function AddressScreen() {
-  const { updateUser, completeOnboarding } = useAppContext();
-  const [address, setAddress] = useState('');
-  const [instructions, setInstructions] = useState('');
+  const { user, updateUser, completeOnboarding } = useAppContext();
+  const [street, setStreet] = useState('');
+  const [city, setCity] = useState('');
+  const [pincode, setPincode] = useState('');
+  const [phone, setPhone] = useState(user?.phone || '');
 
   const handleFinish = () => {
-    if (address.trim().length > 0) {
-      updateUser({ 
-        address: address.trim(), 
-        instructions: instructions.trim() || 'Hang pouch on door handle (Silent 6 AM Drop)' 
-      });
-      completeOnboarding();
-    }
+    const fullAddress = `${street}${city ? ', ' + city : ''}${pincode ? ' - ' + pincode : ''}`;
+    updateUser({ 
+      address: fullAddress.trim() || 'Flat 402, Green Valley Apartments', 
+      phone: phone.trim() || user?.phone || '+91 9876543210',
+      instructions: 'Silent Doorstep Drop (6:00 AM)'
+    });
+    completeOnboarding();
   };
 
   return (
@@ -25,59 +27,64 @@ export default function AddressScreen() {
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.content}>
         
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollInside}>
-          <Text style={styles.brandLogo}>ZING</Text>
-          <Text style={styles.title}>Where to drop your pouch?</Text>
-          <Text style={styles.subtitle}>Our delivery rider drops your vacuum pouch at 6:00 AM sharp.</Text>
-          
-          <View style={styles.trustGlassCard}>
-            <View style={styles.bellIconCircle}>
-              <BellOff color="#111111" size={18} />
-            </View>
-            <View style={styles.trustTexts}>
-              <Text style={styles.trustTitle}>Silent Delivery • Bell Mat Bajana</Text>
-              <Text style={styles.trustSub}>
-                100% quiet delivery before sunrise. Your family and neighbors won't be disturbed.
-              </Text>
-            </View>
+          <View style={styles.logoRow}>
+            <Text style={styles.logoWhite}>Zing</Text>
+            <Text style={styles.logoNeon}>Fit</Text>
           </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Complete Doorstep Address</Text>
-            <View style={styles.glassInputCard}>
+          <Text style={styles.title}>DELIVERY ADDRESS</Text>
+          <Text style={styles.subtitle}>Our delivery rider drops your vacuum pouch silently by 6:00 AM sharp.</Text>
+
+          <View style={styles.inputsStack}>
+            <View style={styles.inputContainer}>
               <TextInput
-                style={[styles.input, styles.textArea]}
-                placeholder="House / Flat No, Tower, Society Name, Street..."
-                placeholderTextColor="#A1A1AA"
-                multiline
-                numberOfLines={3}
-                value={address}
-                onChangeText={setAddress}
+                style={styles.textInput}
+                placeholder="Street Address"
+                placeholderTextColor="#71717A"
+                value={street}
+                onChangeText={setStreet}
+                autoFocus
               />
             </View>
-          </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Drop Instructions (Optional)</Text>
-            <View style={styles.glassInputCard}>
+            <View style={styles.inputContainer}>
               <TextInput
-                style={styles.input}
-                placeholder="e.g. Hang on door handle / gate hook"
-                placeholderTextColor="#A1A1AA"
-                value={instructions}
-                onChangeText={setInstructions}
+                style={styles.textInput}
+                placeholder="City"
+                placeholderTextColor="#71717A"
+                value={city}
+                onChangeText={setCity}
+              />
+            </View>
+
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.textInput}
+                placeholder="Pincode"
+                placeholderTextColor="#71717A"
+                keyboardType="number-pad"
+                maxLength={6}
+                value={pincode}
+                onChangeText={setPincode}
+              />
+            </View>
+
+            <View style={[styles.inputContainer, styles.inputContainerActive]}>
+              <TextInput
+                style={styles.textInput}
+                placeholder="Phone Number"
+                placeholderTextColor="#71717A"
+                keyboardType="phone-pad"
+                value={phone}
+                onChangeText={setPhone}
               />
             </View>
           </View>
         </ScrollView>
 
-        <View style={styles.bottomBar}>
-          <BouncyButton 
-            style={[styles.nextBtn, address.trim().length === 0 && styles.nextBtnDisabled]} 
-            onPress={handleFinish}
-            disabled={address.trim().length === 0}
-          >
-            <Text style={styles.nextText}>Unlock My Zing App</Text>
-            <CheckCircle2 color="#111111" size={20} />
+        <View style={styles.bottomArea}>
+          <BouncyButton style={styles.saveBtn} onPress={handleFinish}>
+            <Text style={styles.saveBtnText}>Save Address</Text>
           </BouncyButton>
         </View>
 
@@ -89,130 +96,88 @@ export default function AddressScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAFAFA',
+    backgroundColor: Colors.background,
   },
   content: {
     flex: 1,
-    paddingHorizontal: 20,
+    paddingHorizontal: 24,
+    paddingVertical: 16,
     justifyContent: 'space-between',
   },
   scrollInside: {
-    paddingTop: 16,
+    paddingTop: 10,
     paddingBottom: 20,
   },
-  brandLogo: {
+  logoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 28,
+  },
+  logoWhite: {
     fontSize: 26,
     fontWeight: '900',
-    color: '#111111',
-    letterSpacing: 2,
-    marginBottom: 12,
+    color: '#FFFFFF',
+  },
+  logoNeon: {
+    fontSize: 26,
+    fontWeight: '900',
+    color: Colors.neon,
   },
   title: {
     fontSize: 28,
     fontWeight: '900',
-    color: '#111111',
-    letterSpacing: -0.5,
+    color: '#FFFFFF',
+    letterSpacing: 0.5,
+    marginBottom: 8,
   },
   subtitle: {
-    fontSize: 14,
-    color: '#71717A',
-    marginTop: 6,
-    marginBottom: 18,
-    lineHeight: 20,
-  },
-  trustGlassCard: {
-    flexDirection: 'row',
-    backgroundColor: '#FFFDF5',
-    padding: 14,
-    borderRadius: 18,
-    marginBottom: 18,
-    borderWidth: 1.5,
-    borderColor: '#FFE082',
-    alignItems: 'flex-start',
-  },
-  bellIconCircle: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: '#FFF8E1',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 10,
-  },
-  trustTexts: {
-    flex: 1,
-  },
-  trustTitle: {
     fontSize: 13,
-    fontWeight: '800',
-    color: '#111111',
-    marginBottom: 2,
+    color: '#8E8E93',
+    lineHeight: 18,
+    marginBottom: 28,
   },
-  trustSub: {
-    fontSize: 12,
-    color: '#71717A',
-    lineHeight: 16,
+  inputsStack: {
+    gap: 14,
   },
-  inputGroup: {
-    marginBottom: 14,
-  },
-  inputLabel: {
-    fontSize: 11,
-    fontWeight: '800',
-    color: '#71717A',
-    marginBottom: 6,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  glassInputCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 4,
-    borderWidth: 1.5,
-    borderColor: 'rgba(0,0,0,0.06)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.03,
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  input: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#111111',
-    paddingVertical: 10,
-  },
-  textArea: {
-    height: 65,
-    textAlignVertical: 'top',
-  },
-  bottomBar: {
-    paddingBottom: 20,
-    paddingTop: 10,
-  },
-  nextBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  inputContainer: {
+    backgroundColor: '#141416',
+    borderRadius: 18,
+    paddingHorizontal: 20,
+    height: 60,
     justifyContent: 'center',
-    backgroundColor: '#FFC800',
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  inputContainerActive: {
+    borderColor: 'rgba(212, 255, 0, 0.6)',
+    backgroundColor: '#18181A',
+  },
+  textInput: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  bottomArea: {
+    paddingBottom: 16,
+  },
+  saveBtn: {
+    backgroundColor: '#141416',
+    borderWidth: 1.5,
+    borderColor: Colors.neon,
     height: 58,
     borderRadius: 29,
-    shadowColor: '#FFC800',
-    shadowOffset: { width: 0, height: 8 },
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: Colors.neon,
+    shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.35,
-    shadowRadius: 12,
+    shadowRadius: 14,
     elevation: 6,
   },
-  nextBtnDisabled: {
-    backgroundColor: '#E4E4E7',
-    shadowOpacity: 0,
-    elevation: 0,
-  },
-  nextText: {
-    color: '#111111',
+  saveBtnText: {
+    color: Colors.neon,
     fontSize: 17,
     fontWeight: '900',
-    marginRight: 8,
+    letterSpacing: 0.5,
   }
 });

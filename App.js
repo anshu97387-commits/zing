@@ -1,20 +1,22 @@
 import React from 'react';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Home, Wallet, User, Users } from 'lucide-react-native';
+import { Home, Wallet, User, Users, Zap } from 'lucide-react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 
 import { AppProvider, useAppContext } from './src/context/AppContext';
+import { Colors } from './src/theme/colors';
 
-// Auth & Onboarding Screens
+// Auth & Onboarding Screens (Mockup 2 Match)
 import PhoneAuthScreen from './src/screens/auth/PhoneAuthScreen';
 import NameScreen from './src/screens/onboarding/NameScreen';
 import GoalScreen from './src/screens/onboarding/GoalScreen';
 import AddressScreen from './src/screens/onboarding/AddressScreen';
 
-// Main Screens
+// Main Screens (Mockup 1 & 2 Match)
 import HomeScreen from './src/screens/HomeScreen';
 import WalletScreen from './src/screens/WalletScreen';
 import ReferScreen from './src/screens/ReferScreen';
@@ -29,23 +31,24 @@ function MainTabs() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#FFFFFF',
-          borderTopWidth: 1,
-          borderTopColor: 'rgba(0,0,0,0.06)',
-          height: 82,
-          paddingBottom: 24,
+          backgroundColor: '#121214',
+          borderTopWidth: 1.5,
+          borderTopColor: 'rgba(255, 255, 255, 0.08)',
+          height: 84,
+          paddingBottom: 26,
           paddingTop: 10,
-          elevation: 8,
+          elevation: 12,
           shadowColor: '#000',
-          shadowOffset: { width: 0, height: -4 },
-          shadowOpacity: 0.04,
-          shadowRadius: 12,
+          shadowOffset: { width: 0, height: -6 },
+          shadowOpacity: 0.5,
+          shadowRadius: 16,
         },
-        tabBarActiveTintColor: '#111111',
-        tabBarInactiveTintColor: '#A1A1AA',
+        tabBarActiveTintColor: Colors.neon,
+        tabBarInactiveTintColor: '#71717A',
         tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: '700',
+          fontSize: 11,
+          fontWeight: '800',
+          marginTop: 2,
         },
       }}
     >
@@ -53,28 +56,36 @@ function MainTabs() {
         name="Home" 
         component={HomeScreen} 
         options={{
-          tabBarIcon: ({ color }) => <Home color={color} size={24} />
+          tabBarIcon: ({ color, focused }) => (
+            <Home color={color} size={22} strokeWidth={focused ? 2.5 : 2} />
+          )
         }}
       />
       <Tab.Screen 
         name="Pass" 
         component={WalletScreen} 
         options={{
-          tabBarIcon: ({ color }) => <Wallet color={color} size={24} />
+          tabBarIcon: ({ color, focused }) => (
+            <Wallet color={color} size={22} strokeWidth={focused ? 2.5 : 2} />
+          )
         }}
       />
       <Tab.Screen 
         name="Refer" 
         component={ReferScreen} 
         options={{
-          tabBarIcon: ({ color }) => <Users color={color} size={24} />
+          tabBarIcon: ({ color, focused }) => (
+            <Users color={color} size={22} strokeWidth={focused ? 2.5 : 2} />
+          )
         }}
       />
       <Tab.Screen 
         name="Profile" 
         component={ProfileScreen} 
         options={{
-          tabBarIcon: ({ color }) => <User color={color} size={24} />
+          tabBarIcon: ({ color, focused }) => (
+            <User color={color} size={22} strokeWidth={focused ? 2.5 : 2} />
+          )
         }}
       />
     </Tab.Navigator>
@@ -83,7 +94,13 @@ function MainTabs() {
 
 function OnboardingStack() {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
+    <Stack.Navigator 
+      screenOptions={{ 
+        headerShown: false, 
+        animation: 'slide_from_right',
+        contentStyle: { backgroundColor: Colors.background }
+      }}
+    >
       <Stack.Screen name="PhoneAuth" component={PhoneAuthScreen} />
       <Stack.Screen name="Name" component={NameScreen} />
       <Stack.Screen name="Goal" component={GoalScreen} />
@@ -97,7 +114,7 @@ function AppNavigator() {
   
   return (
     <NavigationContainer>
-      <StatusBar style="dark" />
+      <StatusBar style="light" backgroundColor="#080808" />
       {isOnboarded ? <MainTabs /> : <OnboardingStack />}
     </NavigationContainer>
   );

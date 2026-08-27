@@ -1,35 +1,32 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Modal, TextInput, Switch } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Switch, Modal, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Settings, LogOut, Bell, CircleHelp, MapPin, ChevronRight, CheckCircle2, X, Shield, Sparkles, Phone } from 'lucide-react-native';
+import { User, Zap, LogOut, X, CheckCircle2 } from 'lucide-react-native';
 import { useAppContext } from '../context/AppContext';
+import { Colors } from '../theme/colors';
 import BouncyButton from '../components/BouncyButton';
 
 export default function ProfileScreen() {
   const { user, updateUser, resetApp } = useAppContext();
-  const [showAddressModal, setShowAddressModal] = useState(false);
-  const [showHelpModal, setShowHelpModal] = useState(false);
-  const [editAddress, setEditAddress] = useState(user?.address || 'Flat 402, Tower B, Green Valley');
-  const [editInstructions, setEditInstructions] = useState(user?.instructions || 'Hang pouch on the door handle');
-  const [silentDropNotifs, setSilentDropNotifs] = useState(true);
+  const [darkMode, setDarkMode] = useState(true);
+  const [notifications, setNotifications] = useState(true);
+  const [subDetails, setSubDetails] = useState(true);
+  const [paymentMethods, setPaymentMethods] = useState(true);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [name, setName] = useState(user?.name || 'Arjun Singh');
+  const [email, setEmail] = useState('arjun.s@zing.fit');
+  const [phone, setPhone] = useState(user?.phone || '+91 9876543210');
 
-  const handleSaveAddress = () => {
-    if (editAddress.trim().length === 0) {
-      Alert.alert('Address Required', 'Please enter your complete doorstep delivery address.');
-      return;
-    }
-    updateUser({
-      address: editAddress.trim(),
-      instructions: editInstructions.trim(),
-    });
-    setShowAddressModal(false);
-    Alert.alert('Address Updated ✅', 'Your 6:00 AM drops will now be delivered to this updated location.');
+  const handleSaveProfile = () => {
+    updateUser({ name, phone });
+    setShowEditModal(false);
+    Alert.alert('Profile Updated', 'Your profile details have been saved.');
   };
 
   const handleLogout = () => {
     Alert.alert(
-      "Log Out / Reset",
-      "Do you want to log out and test the Phone OTP login flow again?",
+      "Log Out",
+      "Are you sure you want to log out?",
       [
         { text: "Cancel", style: "cancel" },
         { text: "Log Out", style: "destructive", onPress: () => resetApp && resetApp() }
@@ -37,495 +34,354 @@ export default function ProfileScreen() {
     );
   };
 
+  const orderHistory = [
+    { id: '12345', title: '7 Day Stack - ₹1499', status: 'Delivered 6:00 AM' },
+    { id: '12344', title: 'Protein Pouch - ₹999', status: 'Delivered 6:00 AM' },
+    { id: '12343', title: 'Protein Pouch - ₹999', status: 'Delivered 6:00 AM' },
+  ];
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         
-        <Text style={styles.headerTitle}>Account</Text>
-        
-        {/* User Card */}
-        <View style={styles.userCard}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{(user?.name || 'A')[0].toUpperCase()}</Text>
-          </View>
-          <View style={styles.userInfo}>
-            <Text style={styles.userName}>{user?.name || 'Arjun Sharma'}</Text>
-            <Text style={styles.userPhone}>{user?.phone || '+91 98765 43210'}</Text>
-            <View style={styles.membershipPill}>
-              <Sparkles color="#FFC800" size={12} fill="#FFC800" />
-              <Text style={styles.membershipText}>{user?.activePlan || '7-Day Pass Active'}</Text>
-            </View>
-          </View>
+        {/* Top Brand Logo */}
+        <View style={styles.logoRow}>
+          <Text style={styles.logoWhite}>Zing</Text>
+          <Text style={styles.logoNeon}>Fit</Text>
         </View>
 
-        {/* Quick Delivery Address Card */}
-        <Text style={styles.sectionTitle}>Doorstep Delivery</Text>
-        <TouchableOpacity 
-          style={styles.addressCard} 
-          activeOpacity={0.85}
-          onPress={() => {
-            setEditAddress(user?.address || '');
-            setEditInstructions(user?.instructions || '');
-            setShowAddressModal(true);
-          }}
-        >
-          <View style={styles.addressIconCircle}>
-            <MapPin color="#111111" size={22} />
-          </View>
-          <View style={styles.addressInfo}>
-            <View style={styles.addressHeaderRow}>
-              <Text style={styles.addressLabel}>Active Delivery Address</Text>
-              <Text style={styles.changeActionText}>Edit</Text>
-            </View>
-            <Text style={styles.addressText} numberOfLines={2}>
-              {user?.address || 'Set your doorstep delivery address'}
-            </Text>
-            <Text style={styles.instructionsText}>
-              Note: {user?.instructions || 'Hang pouch on door handle (Silent 6 AM Drop)'}
-            </Text>
-          </View>
-        </TouchableOpacity>
-
-        {/* Preferences Section */}
-        <Text style={styles.sectionTitle}>Preferences</Text>
-        <View style={styles.menuGroup}>
-          <View style={styles.menuRow}>
-            <View style={styles.menuIconContainer}>
-              <Bell color="#111111" size={20} />
-            </View>
-            <View style={styles.menuTextContainer}>
-              <Text style={styles.menuTitle}>Silent 6 AM Drop Alerts</Text>
-              <Text style={styles.menuSubtitle}>Notification when packet is dropped at door</Text>
-            </View>
-            <Switch 
-              value={silentDropNotifs} 
-              onValueChange={setSilentDropNotifs} 
-              trackColor={{ false: '#E4E4E7', true: '#FFC800' }}
-              thumbColor="#FFFFFF"
-            />
-          </View>
+        {/* 1. MY PROFILE SECTION (Mockup Match) */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>MY PROFILE</Text>
         </View>
 
-        {/* Help & Support Section */}
-        <Text style={styles.sectionTitle}>Support & Safety</Text>
-        <View style={styles.menuGroup}>
-          <MenuRow 
-            icon={<CircleHelp color="#111111" size={20} />} 
-            title="How Zing Works & FAQs" 
-            subtitle="0% Spoilage & 6 AM delivery explained"
-            onPress={() => setShowHelpModal(true)}
-          />
-          <MenuRow 
-            icon={<Shield color="#34C759" size={20} />} 
-            title="Clean Nutrition & Lab Quality" 
-            subtitle="100% genuine sealed ingredients"
-            onPress={() => Alert.alert("🛡️ Lab Tested Quality", "Every Zing vacuum pouch contains 100% genuine raw whey isolate, certified rolled oats, and fresh seeds with zero adulteration.")}
-          />
-          <MenuRow 
-            icon={<LogOut color="#EF4444" size={20} />} 
-            title="Log Out / Reset" 
-            textColor="#EF4444" 
-            isLast={true} 
-            onPress={handleLogout} 
-          />
+        <View style={styles.profileCard}>
+          <View style={styles.avatarCircle}>
+            <User color="#FFFFFF" size={48} />
+          </View>
+
+          <Text style={styles.profileName}>Name: {user?.name || 'Arjun Singh'}</Text>
+          <Text style={styles.profileMeta}>Email: {email}</Text>
+          <Text style={styles.profileMeta}>Phone: {user?.phone || '+91 9876543210'}</Text>
+
+          <TouchableOpacity style={styles.editProfileBtn} onPress={() => setShowEditModal(true)}>
+            <Text style={styles.editProfileText}>Edit Profile</Text>
+          </TouchableOpacity>
         </View>
 
-        {/* Footer Brand */}
-        <View style={styles.brandFooter}>
-          <Text style={styles.footerZing}>ZING</Text>
-          <Text style={styles.footerSub}>DELIVERING MORNING FUEL • ZERO SPOILAGE</Text>
-          <Text style={styles.versionText}>Version 1.0.4</Text>
+        {/* 2. SETTINGS SECTION (Mockup Match) */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>SETTINGS</Text>
+        </View>
+
+        <View style={styles.settingsCard}>
+          <SettingSwitchRow 
+            label="Dark Mode (On)" 
+            value={darkMode} 
+            onValueChange={setDarkMode} 
+          />
+          <SettingSwitchRow 
+            label="Notifications" 
+            value={notifications} 
+            onValueChange={setNotifications} 
+          />
+          <SettingSwitchRow 
+            label="Subscription Details" 
+            value={subDetails} 
+            onValueChange={setSubDetails} 
+          />
+          <SettingSwitchRow 
+            label="Payment Methods" 
+            value={paymentMethods} 
+            onValueChange={setPaymentMethods} 
+          />
+
+          <TouchableOpacity style={styles.logoutRow} onPress={handleLogout}>
+            <Text style={styles.logoutText}>Log Out</Text>
+            <LogOut color="#EF4444" size={18} />
+          </TouchableOpacity>
+        </View>
+
+        {/* 3. ORDER HISTORY SECTION (Mockup Match) */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>ORDER HISTORY</Text>
+        </View>
+
+        <View style={styles.orderHistoryList}>
+          {orderHistory.map((order) => (
+            <View key={order.id} style={styles.orderCard}>
+              <View style={styles.orderBoltCircle}>
+                <Zap color={Colors.neon} size={18} fill={Colors.neon} />
+              </View>
+              <View style={styles.orderInfo}>
+                <Text style={styles.orderNumber}>Order #{order.id}</Text>
+                <Text style={styles.orderTitle}>{order.title}</Text>
+              </View>
+            </View>
+          ))}
         </View>
 
       </ScrollView>
 
-      {/* Edit Address Modal */}
-      <Modal visible={showAddressModal} animationType="slide" transparent={true}>
+      {/* Edit Profile Modal */}
+      <Modal visible={showEditModal} animationType="slide" transparent={true}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            
-            <View style={styles.modalHeader}>
-              <View>
-                <Text style={styles.modalTitle}>Delivery Address</Text>
-                <Text style={styles.modalSub}>Where our rider should drop your 6 AM stack</Text>
-              </View>
-              <TouchableOpacity onPress={() => setShowAddressModal(false)}>
-                <X color="#000" size={24} />
+            <View style={styles.modalHead}>
+              <Text style={styles.modalTitle}>Edit Profile</Text>
+              <TouchableOpacity onPress={() => setShowEditModal(false)}>
+                <X color="#FFF" size={24} />
               </TouchableOpacity>
             </View>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>House No, Tower, Society / Street</Text>
-              <TextInput
-                style={[styles.modalInput, styles.modalTextArea]}
-                placeholder="e.g. Flat 402, Tower B, Green Valley Apartments"
-                placeholderTextColor="#A1A1AA"
-                multiline
-                numberOfLines={3}
-                value={editAddress}
-                onChangeText={setEditAddress}
-              />
-            </View>
+            <TextInput
+              style={styles.modalInput}
+              placeholder="Name"
+              placeholderTextColor="#71717A"
+              value={name}
+              onChangeText={setName}
+            />
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Drop Instructions (Silent Delivery)</Text>
-              <TextInput
-                style={styles.modalInput}
-                placeholder="e.g. Hang on door handle, bell mat bajana"
-                placeholderTextColor="#A1A1AA"
-                value={editInstructions}
-                onChangeText={setEditInstructions}
-              />
-            </View>
+            <TextInput
+              style={styles.modalInput}
+              placeholder="Email"
+              placeholderTextColor="#71717A"
+              value={email}
+              onChangeText={setEmail}
+            />
 
-            <BouncyButton style={styles.saveBtn} onPress={handleSaveAddress}>
-              <Text style={styles.saveBtnText}>Save Address</Text>
-            </BouncyButton>
+            <TextInput
+              style={styles.modalInput}
+              placeholder="Phone"
+              placeholderTextColor="#71717A"
+              value={phone}
+              onChangeText={setPhone}
+            />
 
-          </View>
-        </View>
-      </Modal>
-
-      {/* FAQs & Help Modal */}
-      <Modal visible={showHelpModal} animationType="slide" transparent={true}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Frequently Asked Questions</Text>
-              <TouchableOpacity onPress={() => setShowHelpModal(false)}>
-                <X color="#000" size={24} />
-              </TouchableOpacity>
-            </View>
-
-            <ScrollView style={{ maxHeight: 350 }} showsVerticalScrollIndicator={false}>
-              <FaqItem 
-                q="Subah 6:00 AM delivery kaise hoti hai?" 
-                a="Humare delivery riders raat ko fresh dry stacks pack karte hain aur subah 6 AM sharp aapke darwaze par pouch drop karte hain bina bell bajaye."
-              />
-              <FaqItem 
-                q="Agar main bahar gaya toh kya hoga?" 
-                a="Aap Home screen se 'Vacation Mode' on kar sakte hain. Aapka wallet balance save rahega aur ek din aage shift ho jayega."
-              />
-              <FaqItem 
-                q="Pouch mein kya-kya hota hai?" 
-                a="Aapke selected goal ke hisab se exact gram raw whey protein, rolled oats, chia seeds aur roasted peanut butter ka dry vacuum pouch."
-              />
-            </ScrollView>
-
-            <BouncyButton style={styles.saveBtn} onPress={() => setShowHelpModal(false)}>
-              <Text style={styles.saveBtnText}>Got it</Text>
+            <BouncyButton style={styles.saveBtn} onPress={handleSaveProfile}>
+              <Text style={styles.saveBtnText}>Save Changes</Text>
             </BouncyButton>
           </View>
         </View>
       </Modal>
-
     </SafeAreaView>
   );
 }
 
-const FaqItem = ({ q, a }) => (
-  <View style={styles.faqBox}>
-    <Text style={styles.faqQ}>Q: {q}</Text>
-    <Text style={styles.faqA}>{a}</Text>
+const SettingSwitchRow = ({ label, value, onValueChange }) => (
+  <View style={styles.settingRow}>
+    <Text style={styles.settingLabel}>{label}</Text>
+    <Switch 
+      value={value} 
+      onValueChange={onValueChange} 
+      trackColor={{ false: '#27272A', true: Colors.neon }}
+      thumbColor={value ? '#000' : '#FFF'}
+    />
   </View>
-);
-
-const MenuRow = ({ icon, title, subtitle, isLast, textColor = "#111111", onPress }) => (
-  <TouchableOpacity style={[styles.menuRow, !isLast && styles.menuBorder]} onPress={onPress}>
-    <View style={styles.menuIconContainer}>
-      {icon}
-    </View>
-    <View style={styles.menuTextContainer}>
-      <Text style={[styles.menuTitle, { color: textColor }]}>{title}</Text>
-      {subtitle && <Text style={styles.menuSubtitle}>{subtitle}</Text>}
-    </View>
-    <ChevronRight color="#C7C7CC" size={18} />
-  </TouchableOpacity>
 );
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAFAFA',
+    backgroundColor: Colors.background,
   },
   scrollContent: {
     paddingHorizontal: 20,
-    paddingTop: 16,
+    paddingTop: 12,
     paddingBottom: 40,
   },
-  headerTitle: {
-    fontSize: 34,
-    fontWeight: '900',
-    color: '#111111',
+  logoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 20,
-    letterSpacing: -0.5,
   },
-  userCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 24,
-    padding: 20,
-    marginBottom: 24,
-    borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.05)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.04,
-    shadowRadius: 12,
-    elevation: 3,
-  },
-  avatar: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: '#111111',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarText: {
-    fontSize: 24,
+  logoWhite: {
+    fontSize: 26,
     fontWeight: '900',
-    color: '#FFC800',
+    color: '#FFFFFF',
   },
-  userInfo: {
-    marginLeft: 16,
-    flex: 1,
+  logoNeon: {
+    fontSize: 26,
+    fontWeight: '900',
+    color: Colors.neon,
   },
-  userName: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: '#111111',
-  },
-  userPhone: {
-    fontSize: 14,
-    color: '#71717A',
-    marginTop: 2,
-    fontWeight: '500',
-  },
-  membershipPill: {
-    flexDirection: 'row',
+  sectionHeader: {
     alignItems: 'center',
-    backgroundColor: '#FFFDF5',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 8,
-    alignSelf: 'flex-start',
-    marginTop: 6,
-    borderWidth: 1,
-    borderColor: '#FFE082',
-  },
-  membershipText: {
-    fontSize: 11,
-    fontWeight: '800',
-    color: '#111111',
-    marginLeft: 4,
+    marginBottom: 12,
+    marginTop: 8,
   },
   sectionTitle: {
-    fontSize: 13,
-    fontWeight: '800',
-    color: '#71717A',
-    textTransform: 'uppercase',
-    marginBottom: 10,
-    marginLeft: 4,
-    letterSpacing: 0.5,
+    fontSize: 16,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    letterSpacing: 1,
   },
-  addressCard: {
-    flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 22,
-    padding: 18,
+  profileCard: {
+    backgroundColor: '#141416',
+    borderRadius: 24,
+    padding: 24,
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
     marginBottom: 24,
-    borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.06)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.03,
-    shadowRadius: 10,
-    elevation: 2,
   },
-  addressIconCircle: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#FFF8E1',
+  avatarCircle: {
+    width: 90,
+    height: 90,
+    borderRadius: 45,
+    backgroundColor: '#27272A',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 14,
+    marginBottom: 16,
   },
-  addressInfo: {
-    flex: 1,
+  profileName: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    marginBottom: 4,
   },
-  addressHeaderRow: {
+  profileMeta: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#A1A1AA',
+    marginBottom: 4,
+  },
+  editProfileBtn: {
+    backgroundColor: '#1C1C1E',
+    borderWidth: 1,
+    borderColor: Colors.neon,
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    borderRadius: 14,
+    marginTop: 12,
+  },
+  editProfileText: {
+    color: Colors.neon,
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  settingsCard: {
+    backgroundColor: '#141416',
+    borderRadius: 24,
+    padding: 16,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    marginBottom: 24,
+  },
+  settingRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 4,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#27272A',
   },
-  addressLabel: {
-    fontSize: 12,
-    fontWeight: '800',
-    color: '#71717A',
-    textTransform: 'uppercase',
-  },
-  changeActionText: {
-    fontSize: 13,
-    fontWeight: '800',
-    color: '#D97706',
-  },
-  addressText: {
+  settingLabel: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#111111',
-    lineHeight: 20,
+    color: '#FFFFFF',
   },
-  instructionsText: {
-    fontSize: 12,
-    color: '#71717A',
-    marginTop: 4,
-    fontStyle: 'italic',
+  logoutRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 14,
+    paddingHorizontal: 8,
   },
-  menuGroup: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 22,
+  logoutText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#EF4444',
+  },
+  orderHistoryList: {
+    gap: 12,
     marginBottom: 24,
-    paddingHorizontal: 18,
-    borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.05)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.03,
-    shadowRadius: 10,
-    elevation: 2,
   },
-  menuRow: {
+  orderCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 16,
+    backgroundColor: '#141416',
+    borderRadius: 20,
+    padding: 16,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
   },
-  menuBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#F4F4F5',
-  },
-  menuIconContainer: {
-    width: 32,
+  orderBoltCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#1C1C1E',
     alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(212, 255, 0, 0.3)',
   },
-  menuTextContainer: {
-    marginLeft: 12,
+  orderInfo: {
     flex: 1,
   },
-  menuTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#111111',
-  },
-  menuSubtitle: {
-    fontSize: 13,
-    color: '#71717A',
-    marginTop: 2,
-  },
-  brandFooter: {
-    alignItems: 'center',
-    paddingVertical: 24,
-  },
-  footerZing: {
-    fontSize: 22,
-    fontWeight: '900',
-    color: '#111111',
-    letterSpacing: 3,
-  },
-  footerSub: {
-    fontSize: 10,
+  orderNumber: {
+    fontSize: 14,
     fontWeight: '800',
-    color: '#A1A1AA',
-    letterSpacing: 1,
-    marginTop: 4,
+    color: '#FFFFFF',
+    marginBottom: 2,
   },
-  versionText: {
-    fontSize: 12,
-    color: '#D4D4D8',
-    marginTop: 8,
+  orderTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#A1A1AA',
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0,0,0,0.7)',
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#141416',
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     padding: 24,
     paddingBottom: 40,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
-  modalHeader: {
+  modalHead: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     marginBottom: 20,
   },
   modalTitle: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '900',
-    color: '#111111',
-  },
-  modalSub: {
-    fontSize: 13,
-    color: '#71717A',
-    marginTop: 4,
-  },
-  inputGroup: {
-    marginBottom: 16,
-  },
-  inputLabel: {
-    fontSize: 12,
-    fontWeight: '800',
-    color: '#71717A',
-    textTransform: 'uppercase',
-    marginBottom: 8,
+    color: '#FFFFFF',
   },
   modalInput: {
-    backgroundColor: '#F4F4F5',
-    borderRadius: 14,
+    backgroundColor: '#1C1C1E',
+    borderRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 14,
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#111111',
-  },
-  modalTextArea: {
-    height: 80,
-    textAlignVertical: 'top',
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginBottom: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   saveBtn: {
-    backgroundColor: '#111111',
+    backgroundColor: '#1C1C1E',
+    borderWidth: 1.5,
+    borderColor: Colors.neon,
     height: 56,
     borderRadius: 28,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 12,
+    marginTop: 8,
   },
   saveBtnText: {
-    color: '#FFFFFF',
+    color: Colors.neon,
     fontSize: 16,
-    fontWeight: '800',
-  },
-  faqBox: {
-    backgroundColor: '#F4F4F5',
-    borderRadius: 14,
-    padding: 14,
-    marginBottom: 10,
-  },
-  faqQ: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: '#111111',
-    marginBottom: 4,
-  },
-  faqA: {
-    fontSize: 13,
-    color: '#71717A',
-    lineHeight: 18,
+    fontWeight: '900',
   }
 });

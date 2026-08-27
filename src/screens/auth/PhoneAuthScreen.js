@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, KeyboardAvoidingView, Platform, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppContext } from '../../context/AppContext';
-import { ArrowRight, ShieldCheck, Sparkles } from 'lucide-react-native';
+import { Colors } from '../../theme/colors';
 import BouncyButton from '../../components/BouncyButton';
 import { supabaseService } from '../../lib/supabaseService';
 
@@ -12,29 +12,27 @@ export default function PhoneAuthScreen({ navigation }) {
   const [otp, setOtp] = useState('');
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [timer, setTimer] = useState(30);
 
   const formattedPhone = `+91${phoneNumber}`;
 
   const handleSendOtp = async () => {
     if (phoneNumber.length === 10) {
       setLoading(true);
-      // Real Supabase Auth Call
       await supabaseService.sendPhoneOtp(formattedPhone);
       setLoading(false);
       setIsOtpSent(true);
 
       // Auto-fill fallback for instant local testing
       setTimeout(() => {
-        setOtp('6240');
-      }, 900);
+        setOtp('624089');
+      }, 800);
     } else {
-      Alert.alert('Invalid Mobile Number', 'Please enter a valid 10-digit Indian mobile number.');
+      Alert.alert('Invalid Mobile', 'Please enter a valid 10-digit mobile number.');
     }
   };
 
   const handleVerifyOtp = async () => {
-    if (otp.length === 4) {
+    if (otp.length >= 4) {
       setLoading(true);
       await supabaseService.verifyPhoneOtp(formattedPhone, otp);
       setLoading(false);
@@ -43,7 +41,7 @@ export default function PhoneAuthScreen({ navigation }) {
       setAuthenticated(true);
       navigation.navigate('Name');
     } else {
-      Alert.alert('Invalid OTP', 'Please enter the 4-digit verification code.');
+      Alert.alert('Invalid OTP', 'Please enter the verification code.');
     }
   };
 
@@ -52,26 +50,35 @@ export default function PhoneAuthScreen({ navigation }) {
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.content}>
         
         <View style={styles.topArea}>
-          <Text style={styles.brandLogo}>ZING</Text>
-          
-          <Text style={styles.title}>
-            {isOtpSent ? 'Verify OTP' : 'Enter mobile number'}
-          </Text>
+          <View style={styles.logoRow}>
+            <Text style={styles.logoWhite}>Zing</Text>
+            <Text style={styles.logoNeon}>Fit</Text>
+          </View>
+
+          {/* Floating Frosted Box (Mockup Match) */}
+          <View style={styles.floatingHeaderCard}>
+            <Text style={styles.otpHeaderTitle}>{isOtpSent ? 'Enter OTP' : 'Enter Mobile'}</Text>
+          </View>
+
           <Text style={styles.subtitle}>
             {isOtpSent 
-              ? `We sent a 4-digit code to +91 ${phoneNumber}` 
-              : 'Required for silent 6:00 AM morning fuel drop tracking.'}
+              ? 'We have sent a code to your mobile number' 
+              : 'Required for silent 6:00 AM doorstep delivery tracking.'}
           </Text>
 
+          {isOtpSent && (
+            <Text style={styles.phoneDisplay}>+91 {phoneNumber}</Text>
+          )}
+
           {!isOtpSent ? (
-            <View style={styles.phoneInputContainer}>
-              <View style={styles.countryCodeBox}>
-                <Text style={styles.countryCode}>🇮🇳 +91</Text>
+            <View style={styles.phoneInputRow}>
+              <View style={styles.countryCodeBadge}>
+                <Text style={styles.countryCodeText}>🇮🇳 +91</Text>
               </View>
               <TextInput
-                style={styles.phoneInput}
+                style={styles.phoneTextInput}
                 placeholder="98765 43210"
-                placeholderTextColor="#A1A1AA"
+                placeholderTextColor="#52525B"
                 keyboardType="phone-pad"
                 maxLength={10}
                 value={phoneNumber}
@@ -80,58 +87,62 @@ export default function PhoneAuthScreen({ navigation }) {
               />
             </View>
           ) : (
-            <View style={styles.otpContainer}>
+            <View style={styles.otpBoxesRow}>
+              {[0, 1, 2, 3, 4, 5].map((index) => {
+                const char = otp[index] || '';
+                const isFocused = otp.length === index || (index === 5 && otp.length === 6);
+                return (
+                  <View 
+                    key={index} 
+                    style={[
+                      styles.otpSingleBox, 
+                      isFocused && styles.otpSingleBoxActive,
+                      char ? styles.otpSingleBoxFilled : null
+                    ]}
+                  >
+                    <Text style={styles.otpBoxChar}>{char || ''}</Text>
+                  </View>
+                );
+              })}
               <TextInput
-                style={styles.otpInput}
-                placeholder="• • • •"
-                placeholderTextColor="#A1A1AA"
+                style={styles.hiddenInput}
                 keyboardType="number-pad"
-                maxLength={4}
+                maxLength={6}
                 value={otp}
                 onChangeText={setOtp}
                 autoFocus
               />
-              <Text style={styles.resendText}>Resend code in {timer}s</Text>
             </View>
           )}
-
-          <View style={styles.securityGlassBadge}>
-            <ShieldCheck color="#111111" size={16} />
-            <Text style={styles.securityText}>Zero spam guarantee • 100% silent delivery updates</Text>
-          </View>
         </View>
 
-        {!isOtpSent ? (
-          <BouncyButton 
-            style={[styles.btn, (phoneNumber.length !== 10 || loading) && styles.btnDisabled]} 
-            onPress={handleSendOtp}
-            disabled={phoneNumber.length !== 10 || loading}
-          >
-            {loading ? (
-              <ActivityIndicator color="#111111" />
-            ) : (
-              <>
-                <Text style={styles.btnText}>Get Verification Code</Text>
-                <ArrowRight color="#111111" size={20} />
-              </>
-            )}
-          </BouncyButton>
-        ) : (
-          <BouncyButton 
-            style={[styles.btn, (otp.length !== 4 || loading) && styles.btnDisabled]} 
-            onPress={handleVerifyOtp}
-            disabled={otp.length !== 4 || loading}
-          >
-            {loading ? (
-              <ActivityIndicator color="#111111" />
-            ) : (
-              <>
-                <Text style={styles.btnText}>Verify & Continue</Text>
-                <ArrowRight color="#111111" size={20} />
-              </>
-            )}
-          </BouncyButton>
-        )}
+        <View style={styles.bottomArea}>
+          {!isOtpSent ? (
+            <BouncyButton 
+              style={[styles.actionBtn, (phoneNumber.length !== 10 || loading) && styles.actionBtnDisabled]} 
+              onPress={handleSendOtp}
+              disabled={phoneNumber.length !== 10 || loading}
+            >
+              {loading ? (
+                <ActivityIndicator color={Colors.neon} />
+              ) : (
+                <Text style={styles.actionBtnText}>GET CODE</Text>
+              )}
+            </BouncyButton>
+          ) : (
+            <BouncyButton 
+              style={[styles.actionBtn, (otp.length < 4 || loading) && styles.actionBtnDisabled]} 
+              onPress={handleVerifyOtp}
+              disabled={otp.length < 4 || loading}
+            >
+              {loading ? (
+                <ActivityIndicator color={Colors.neon} />
+              ) : (
+                <Text style={styles.actionBtnText}>VERIFY CODE</Text>
+              )}
+            </BouncyButton>
+          )}
+        </View>
 
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -141,145 +152,166 @@ export default function PhoneAuthScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAFAFA',
+    backgroundColor: Colors.background,
   },
   content: {
     flex: 1,
-    padding: 24,
+    paddingHorizontal: 24,
+    paddingVertical: 16,
     justifyContent: 'space-between',
   },
   topArea: {
     marginTop: 10,
+    alignItems: 'center',
   },
-  brandLogo: {
-    fontSize: 28,
-    fontWeight: '900',
-    color: '#111111',
-    letterSpacing: 2,
-    marginBottom: 20,
+  logoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    marginBottom: 36,
   },
-  title: {
-    fontSize: 32,
+  logoWhite: {
+    fontSize: 26,
     fontWeight: '900',
-    color: '#111111',
-    letterSpacing: -0.5,
+    color: '#FFFFFF',
+  },
+  logoNeon: {
+    fontSize: 26,
+    fontWeight: '900',
+    color: Colors.neon,
+  },
+  floatingHeaderCard: {
+    backgroundColor: '#1C1C1E',
+    borderRadius: 20,
+    paddingHorizontal: 28,
+    paddingVertical: 14,
+    borderWidth: 1.5,
+    borderColor: 'rgba(212, 255, 0, 0.4)',
+    shadowColor: Colors.neon,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.3,
+    shadowRadius: 14,
+    elevation: 6,
+    marginBottom: 16,
+  },
+  otpHeaderTitle: {
+    fontSize: 22,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    letterSpacing: 0.5,
   },
   subtitle: {
-    fontSize: 15,
-    color: '#71717A',
-    marginTop: 6,
-    marginBottom: 28,
-    lineHeight: 22,
+    fontSize: 13,
+    color: '#8E8E93',
+    textAlign: 'center',
+    marginBottom: 16,
   },
-  phoneInputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  countryCodeBox: {
-    backgroundColor: '#FFFFFF',
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderRadius: 18,
-    marginRight: 12,
-    borderWidth: 1.5,
-    borderColor: 'rgba(0,0,0,0.06)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.03,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  countryCode: {
+  phoneDisplay: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#111111',
-  },
-  phoneInput: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 18,
-    paddingHorizontal: 18,
-    paddingVertical: 14,
-    fontSize: 18,
-    fontWeight: '800',
-    color: '#111111',
+    color: '#FFFFFF',
     letterSpacing: 1,
-    borderWidth: 1.5,
-    borderColor: 'rgba(0,0,0,0.06)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.03,
-    shadowRadius: 8,
-    elevation: 2,
+    marginBottom: 28,
   },
-  otpContainer: {
-    marginBottom: 20,
-  },
-  otpInput: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    paddingVertical: 16,
-    textAlign: 'center',
-    fontSize: 30,
-    fontWeight: '900',
-    color: '#111111',
-    letterSpacing: 14,
-    borderWidth: 2,
-    borderColor: '#FFC800',
-    shadowColor: '#FFC800',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
-    elevation: 3,
-  },
-  resendText: {
-    textAlign: 'center',
-    marginTop: 12,
-    fontSize: 13,
-    color: '#71717A',
-    fontWeight: '700',
-  },
-  securityGlassBadge: {
+  phoneInputRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFFDF5',
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 14,
-    alignSelf: 'flex-start',
-    borderWidth: 1,
-    borderColor: '#FFE082',
+    width: '100%',
+    gap: 12,
+    marginTop: 16,
   },
-  securityText: {
-    marginLeft: 8,
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#111111',
-  },
-  btn: {
-    flexDirection: 'row',
+  countryCodeBadge: {
+    backgroundColor: '#18181A',
+    borderRadius: 18,
+    paddingHorizontal: 16,
+    height: 60,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FFC800',
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  countryCodeText: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#FFFFFF',
+  },
+  phoneTextInput: {
+    flex: 1,
+    backgroundColor: '#18181A',
+    borderRadius: 18,
+    paddingHorizontal: 18,
     height: 60,
-    borderRadius: 30,
-    marginBottom: 16,
-    shadowColor: '#FFC800',
-    shadowOffset: { width: 0, height: 8 },
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    letterSpacing: 1,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  otpBoxesRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 10,
+    position: 'relative',
+  },
+  otpSingleBox: {
+    width: 46,
+    height: 56,
+    borderRadius: 14,
+    backgroundColor: '#141416',
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  otpSingleBoxActive: {
+    borderColor: Colors.neon,
+    shadowColor: Colors.neon,
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.35,
-    shadowRadius: 12,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  otpSingleBoxFilled: {
+    borderColor: 'rgba(212, 255, 0, 0.6)',
+  },
+  otpBoxChar: {
+    fontSize: 22,
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
+  hiddenInput: {
+    position: 'absolute',
+    opacity: 0,
+    width: '100%',
+    height: '100%',
+  },
+  bottomArea: {
+    paddingBottom: 16,
+  },
+  actionBtn: {
+    backgroundColor: '#141416',
+    borderWidth: 1.5,
+    borderColor: Colors.neon,
+    height: 58,
+    borderRadius: 29,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: Colors.neon,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.35,
+    shadowRadius: 14,
     elevation: 6,
   },
-  btnDisabled: {
-    backgroundColor: '#E4E4E7',
+  actionBtnDisabled: {
+    borderColor: '#3F3F46',
+    backgroundColor: '#121214',
     shadowOpacity: 0,
-    elevation: 0,
   },
-  btnText: {
-    color: '#111111',
-    fontSize: 17,
+  actionBtnText: {
+    color: Colors.neon,
+    fontSize: 16,
     fontWeight: '900',
-    marginRight: 8,
+    letterSpacing: 1,
   }
 });
