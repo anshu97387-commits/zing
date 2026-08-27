@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -10,13 +10,13 @@ import { StatusBar } from 'expo-status-bar';
 import { AppProvider, useAppContext } from './src/context/AppContext';
 import { Colors } from './src/theme/colors';
 
-// Auth & Onboarding Screens (Mockup 2 Match)
+// Auth & Onboarding Screens (Zing White + Yellow Glow)
 import PhoneAuthScreen from './src/screens/auth/PhoneAuthScreen';
 import NameScreen from './src/screens/onboarding/NameScreen';
 import GoalScreen from './src/screens/onboarding/GoalScreen';
 import AddressScreen from './src/screens/onboarding/AddressScreen';
 
-// Main Screens (Mockup 1 & 2 Match)
+// Main Screens (Zing White + Yellow Glow)
 import HomeScreen from './src/screens/HomeScreen';
 import WalletScreen from './src/screens/WalletScreen';
 import ReferScreen from './src/screens/ReferScreen';
@@ -31,20 +31,20 @@ function MainTabs() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#121214',
+          backgroundColor: '#FFFFFF',
           borderTopWidth: 1.5,
-          borderTopColor: 'rgba(255, 255, 255, 0.08)',
+          borderTopColor: '#E5E5EA',
           height: 84,
           paddingBottom: 26,
           paddingTop: 10,
-          elevation: 12,
+          elevation: 8,
           shadowColor: '#000',
-          shadowOffset: { width: 0, height: -6 },
-          shadowOpacity: 0.5,
-          shadowRadius: 16,
+          shadowOffset: { width: 0, height: -4 },
+          shadowOpacity: 0.04,
+          shadowRadius: 12,
         },
-        tabBarActiveTintColor: Colors.neon,
-        tabBarInactiveTintColor: '#71717A',
+        tabBarActiveTintColor: '#111111',
+        tabBarInactiveTintColor: '#8E8E93',
         tabBarLabelStyle: {
           fontSize: 11,
           fontWeight: '800',
@@ -98,7 +98,7 @@ function OnboardingStack() {
       screenOptions={{ 
         headerShown: false, 
         animation: 'slide_from_right',
-        contentStyle: { backgroundColor: Colors.background }
+        contentStyle: { backgroundColor: '#FFFFFF' }
       }}
     >
       <Stack.Screen name="PhoneAuth" component={PhoneAuthScreen} />
@@ -114,7 +114,7 @@ function AppNavigator() {
   
   return (
     <NavigationContainer>
-      <StatusBar style="light" backgroundColor="#080808" />
+      <StatusBar style="dark" backgroundColor="#FFFFFF" />
       {isOnboarded ? <MainTabs /> : <OnboardingStack />}
     </NavigationContainer>
   );

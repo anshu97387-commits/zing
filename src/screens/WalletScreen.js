@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, ActivityIndicator, Alert, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Check, Flame, ShieldCheck, X, CheckCircle2, ArrowRight, Zap, Sparkles } from 'lucide-react-native';
+import { Check, Flame, X, CheckCircle2, ArrowRight } from 'lucide-react-native';
 import BouncyButton from '../components/BouncyButton';
 import { useAppContext } from '../context/AppContext';
 import { Colors } from '../theme/colors';
@@ -24,7 +24,7 @@ export default function WalletScreen() {
   const handleConfirmUpi = () => {
     setPaymentProcessing(true);
 
-    const upiUrl = `upi://pay?pa=zingfit@okaxis&pn=ZingFit&am=${planAmount}&cu=INR&tn=ZingFit%206AM%20Pass`;
+    const upiUrl = `upi://pay?pa=zing@okaxis&pn=Zing&am=${planAmount}&cu=INR&tn=Zing%206AM%20Pass`;
     Linking.canOpenURL(upiUrl).then(supported => {
       if (supported) {
         Linking.openURL(upiUrl).catch(() => {});
@@ -51,10 +51,10 @@ export default function WalletScreen() {
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         
-        {/* Top Brand */}
+        {/* Top Brand: Zing */}
         <View style={styles.logoRow}>
-          <Text style={styles.logoWhite}>Zing</Text>
-          <Text style={styles.logoNeon}>Fit</Text>
+          <Text style={styles.logoText}>Zing</Text>
+          <View style={styles.logoDot} />
         </View>
 
         <Text style={styles.headerTitle}>HABIT PASSES</Text>
@@ -65,7 +65,7 @@ export default function WalletScreen() {
         {/* Active Plan Banner */}
         {user?.activePlan && (
           <View style={styles.activePlanBanner}>
-            <CheckCircle2 color={Colors.neon} size={22} />
+            <CheckCircle2 color="#34C759" size={22} />
             <View style={{ marginLeft: 12, flex: 1 }}>
               <Text style={styles.activePlanTitle}>{user.activePlan} (Active)</Text>
               <Text style={styles.activePlanSub}>Next Drop: Tomorrow, 6:00 AM sharp</Text>
@@ -104,15 +104,15 @@ export default function WalletScreen() {
             </View>
 
             <View style={styles.featureRow}>
-              <Text style={styles.featureBullet}>⚡</Text>
+              <Text style={styles.featureBullet}>✓</Text>
               <Text style={styles.featureText}>Custom grams dry stack pouch</Text>
             </View>
             <View style={styles.featureRow}>
-              <Text style={styles.featureBullet}>⚡</Text>
+              <Text style={styles.featureBullet}>✓</Text>
               <Text style={styles.featureText}>Delivered silently by 6:00 AM</Text>
             </View>
             <View style={styles.featureRow}>
-              <Text style={styles.featureBullet}>⚡</Text>
+              <Text style={styles.featureBullet}>✓</Text>
               <Text style={styles.featureText}>Vacation Mode pause anytime</Text>
             </View>
           </TouchableOpacity>
@@ -146,11 +146,11 @@ export default function WalletScreen() {
             </View>
 
             <View style={styles.featureRow}>
-              <Text style={styles.featureBullet}>⚡</Text>
+              <Text style={styles.featureBullet}>✓</Text>
               <Text style={styles.featureText}>30 fresh daily deliveries included</Text>
             </View>
             <View style={styles.featureRow}>
-              <Text style={styles.featureBullet}>⚡</Text>
+              <Text style={styles.featureBullet}>✓</Text>
               <Text style={styles.featureText}>Free Zing Stainless Shaker Bottle</Text>
             </View>
           </TouchableOpacity>
@@ -158,11 +158,13 @@ export default function WalletScreen() {
 
       </ScrollView>
 
-      {/* Floating Bottom Pay Button */}
+      {/* Floating Bottom Pay Button with Yellow Glow */}
       <View style={styles.floatingBottomBar}>
-        <BouncyButton style={styles.payButton} onPress={handleStartPayment}>
-          <Text style={styles.payButtonText}>Pay ₹{planAmount.toLocaleString('en-IN')} via UPI</Text>
-        </BouncyButton>
+        <View style={styles.glowButtonWrapper}>
+          <BouncyButton style={styles.payButton} onPress={handleStartPayment}>
+            <Text style={styles.payButtonText}>Pay ₹{planAmount.toLocaleString('en-IN')} via UPI</Text>
+          </BouncyButton>
+        </View>
       </View>
 
       {/* Razorpay UPI Modal */}
@@ -175,16 +177,16 @@ export default function WalletScreen() {
                 <View style={styles.modalHeader}>
                   <View>
                     <Text style={styles.modalTitle}>Razorpay UPI Gateway</Text>
-                    <Text style={styles.modalSub}>Paying ₹{planAmount.toLocaleString('en-IN')} to ZingFit Nutrition</Text>
+                    <Text style={styles.modalSub}>Paying ₹{planAmount.toLocaleString('en-IN')} to Zing Nutrition</Text>
                   </View>
                   <TouchableOpacity onPress={() => !paymentProcessing && setShowCheckout(false)}>
-                    <X color="#FFF" size={24} />
+                    <X color="#000" size={24} />
                   </TouchableOpacity>
                 </View>
 
                 {paymentProcessing ? (
                   <View style={styles.processingContainer}>
-                    <ActivityIndicator size="large" color={Colors.neon} />
+                    <ActivityIndicator size="large" color="#111111" />
                     <Text style={styles.processingTitle}>Opening UPI App...</Text>
                     <Text style={styles.processingSub}>Approve payment of ₹{planAmount.toLocaleString('en-IN')}</Text>
                   </View>
@@ -212,9 +214,11 @@ export default function WalletScreen() {
                       ))}
                     </View>
 
-                    <BouncyButton style={styles.confirmPayBtn} onPress={handleConfirmUpi}>
-                      <Text style={styles.confirmPayText}>Pay Now ₹{planAmount.toLocaleString('en-IN')}</Text>
-                    </BouncyButton>
+                    <View style={styles.glowButtonWrapper}>
+                      <BouncyButton style={styles.confirmPayBtn} onPress={handleConfirmUpi}>
+                        <Text style={styles.confirmPayText}>Pay Now ₹{planAmount.toLocaleString('en-IN')}</Text>
+                      </BouncyButton>
+                    </View>
                   </>
                 )}
               </>
@@ -231,15 +235,17 @@ export default function WalletScreen() {
                   Rider will drop your first vacuum packed stack tomorrow at 6:00 AM sharp.
                 </Text>
 
-                <BouncyButton 
-                  style={styles.doneBtn} 
-                  onPress={() => {
-                    setShowCheckout(false);
-                    setPaymentSuccess(false);
-                  }}
-                >
-                  <Text style={styles.doneBtnText}>Back to Dashboard</Text>
-                </BouncyButton>
+                <View style={styles.glowButtonWrapper}>
+                  <BouncyButton 
+                    style={styles.doneBtn} 
+                    onPress={() => {
+                      setShowCheckout(false);
+                      setPaymentSuccess(false);
+                    }}
+                  >
+                    <Text style={styles.doneBtnText}>Back to Dashboard</Text>
+                  </BouncyButton>
+                </View>
               </View>
             )}
 
@@ -253,10 +259,10 @@ export default function WalletScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: '#FFFFFF',
   },
   scrollContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 24,
     paddingTop: 12,
     paddingBottom: 110,
   },
@@ -265,20 +271,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
   },
-  logoWhite: {
-    fontSize: 26,
+  logoText: {
+    fontSize: 28,
     fontWeight: '900',
-    color: '#FFFFFF',
+    color: '#111111',
+    letterSpacing: -0.5,
   },
-  logoNeon: {
-    fontSize: 26,
-    fontWeight: '900',
-    color: Colors.neon,
+  logoDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: Colors.yellow,
+    marginLeft: 3,
+    marginTop: 4,
   },
   headerTitle: {
     fontSize: 28,
     fontWeight: '900',
-    color: '#FFFFFF',
+    color: '#111111',
     letterSpacing: 0.5,
   },
   headerSub: {
@@ -291,21 +301,21 @@ const styles = StyleSheet.create({
   activePlanBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#18181A',
+    backgroundColor: '#F2FFF5',
     padding: 16,
     borderRadius: 20,
     marginBottom: 20,
     borderWidth: 1.5,
-    borderColor: Colors.neon,
+    borderColor: '#34C759',
   },
   activePlanTitle: {
     fontSize: 15,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#111111',
   },
   activePlanSub: {
     fontSize: 12,
-    color: Colors.neon,
+    color: '#34C759',
     marginTop: 2,
     fontWeight: '700',
   },
@@ -314,20 +324,20 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   planCard: {
-    backgroundColor: '#141416',
+    backgroundColor: '#F8F9FA',
     borderRadius: 24,
     padding: 22,
     borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: '#E5E5EA',
   },
   planCardActive: {
-    borderColor: Colors.neon,
-    backgroundColor: '#18181A',
-    shadowColor: Colors.neon,
+    borderColor: '#111111',
+    backgroundColor: '#FFFFFF',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.08,
     shadowRadius: 14,
-    elevation: 6,
+    elevation: 4,
   },
   checkIcon: {
     position: 'absolute',
@@ -336,7 +346,7 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: Colors.neon,
+    backgroundColor: Colors.yellow,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -348,12 +358,12 @@ const styles = StyleSheet.create({
   planTitle: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#111111',
   },
   popularBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.neon,
+    backgroundColor: Colors.yellow,
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
@@ -366,7 +376,7 @@ const styles = StyleSheet.create({
     marginLeft: 3,
   },
   proBadge: {
-    backgroundColor: '#27272A',
+    backgroundColor: '#111111',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
@@ -375,7 +385,7 @@ const styles = StyleSheet.create({
   proText: {
     fontSize: 9,
     fontWeight: '900',
-    color: Colors.neon,
+    color: Colors.yellow,
   },
   priceRow: {
     flexDirection: 'row',
@@ -385,12 +395,12 @@ const styles = StyleSheet.create({
   planPrice: {
     fontSize: 28,
     fontWeight: '900',
-    color: '#FFFFFF',
+    color: '#111111',
   },
   perDayText: {
     fontSize: 13,
     fontWeight: '700',
-    color: Colors.neon,
+    color: '#71717A',
     marginLeft: 8,
   },
   planDesc: {
@@ -400,30 +410,30 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   highlightBox: {
-    backgroundColor: '#1E1E22',
+    backgroundColor: '#FFFDF5',
     borderRadius: 10,
     padding: 10,
     marginBottom: 14,
     borderWidth: 1,
-    borderColor: 'rgba(212, 255, 0, 0.3)',
+    borderColor: Colors.yellow,
   },
   highlightText: {
     fontSize: 12,
     fontWeight: '700',
-    color: Colors.neon,
+    color: '#111111',
   },
   highlightBoxGold: {
-    backgroundColor: '#1E1E22',
+    backgroundColor: '#F8F9FA',
     borderRadius: 10,
     padding: 10,
     marginBottom: 14,
     borderWidth: 1,
-    borderColor: 'rgba(212, 255, 0, 0.4)',
+    borderColor: '#E5E5EA',
   },
   highlightTextGold: {
     fontSize: 12,
     fontWeight: '800',
-    color: Colors.neon,
+    color: '#111111',
   },
   featureRow: {
     flexDirection: 'row',
@@ -432,12 +442,13 @@ const styles = StyleSheet.create({
   },
   featureBullet: {
     fontSize: 12,
-    color: Colors.neon,
+    color: '#34C759',
+    fontWeight: '900',
     marginRight: 8,
   },
   featureText: {
     fontSize: 13,
-    color: '#D4D4D8',
+    color: '#3A3A3C',
     fontWeight: '600',
   },
   floatingBottomBar: {
@@ -446,39 +457,39 @@ const styles = StyleSheet.create({
     left: 20,
     right: 20,
   },
-  payButton: {
-    backgroundColor: '#18181A',
-    borderWidth: 1.5,
-    borderColor: Colors.neon,
-    borderRadius: 30,
-    height: 58,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: Colors.neon,
+  glowButtonWrapper: {
+    width: '100%',
+    shadowColor: Colors.yellow,
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.35,
-    shadowRadius: 14,
+    shadowOpacity: 0.7,
+    shadowRadius: 18,
     elevation: 8,
   },
+  payButton: {
+    backgroundColor: '#1C1C1E',
+    height: 58,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+  },
   payButtonText: {
-    color: Colors.neon,
-    fontSize: 17,
+    color: '#FFFFFF',
+    fontSize: 16,
     fontWeight: '900',
     letterSpacing: 0.5,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.7)',
+    backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: '#141416',
+    backgroundColor: '#FFFFFF',
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     padding: 24,
     paddingBottom: 40,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   modalHeader: {
     flexDirection: 'row',
@@ -489,7 +500,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 20,
     fontWeight: '900',
-    color: '#FFFFFF',
+    color: '#111111',
   },
   modalSub: {
     fontSize: 13,
@@ -510,15 +521,15 @@ const styles = StyleSheet.create({
   upiRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1C1C1E',
+    backgroundColor: '#F8F9FA',
     padding: 16,
     borderRadius: 16,
     borderWidth: 1.5,
-    borderColor: 'transparent',
+    borderColor: '#E5E5EA',
   },
   upiRowActive: {
-    borderColor: Colors.neon,
-    backgroundColor: '#222226',
+    borderColor: '#111111',
+    backgroundColor: '#FFFFFF',
   },
   upiIcon: {
     fontSize: 22,
@@ -528,37 +539,35 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 15,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#111111',
   },
   radioCircle: {
     width: 20,
     height: 20,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: '#52525B',
+    borderColor: '#C7C7CC',
     alignItems: 'center',
     justifyContent: 'center',
   },
   radioCircleActive: {
-    borderColor: Colors.neon,
+    borderColor: '#111111',
   },
   radioDot: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: Colors.neon,
+    backgroundColor: '#111111',
   },
   confirmPayBtn: {
     backgroundColor: '#1C1C1E',
-    borderWidth: 1.5,
-    borderColor: Colors.neon,
     height: 56,
-    borderRadius: 28,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
   },
   confirmPayText: {
-    color: Colors.neon,
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '900',
   },
@@ -569,7 +578,7 @@ const styles = StyleSheet.create({
   processingTitle: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#111111',
     marginTop: 16,
   },
   processingSub: {
@@ -585,7 +594,7 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 35,
-    backgroundColor: Colors.neon,
+    backgroundColor: Colors.yellow,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
@@ -593,12 +602,12 @@ const styles = StyleSheet.create({
   successTitle: {
     fontSize: 22,
     fontWeight: '900',
-    color: '#FFFFFF',
+    color: '#111111',
     marginBottom: 6,
   },
   successSub: {
     fontSize: 14,
-    color: '#D4D4D8',
+    color: '#3A3A3C',
     textAlign: 'center',
     lineHeight: 20,
     marginBottom: 10,
@@ -611,16 +620,14 @@ const styles = StyleSheet.create({
   },
   doneBtn: {
     backgroundColor: '#1C1C1E',
-    borderWidth: 1.5,
-    borderColor: Colors.neon,
     width: '100%',
     height: 56,
-    borderRadius: 28,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
   },
   doneBtnText: {
-    color: Colors.neon,
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '900',
   }

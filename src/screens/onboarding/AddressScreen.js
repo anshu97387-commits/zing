@@ -28,8 +28,8 @@ export default function AddressScreen() {
         
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollInside}>
           <View style={styles.logoRow}>
-            <Text style={styles.logoWhite}>Zing</Text>
-            <Text style={styles.logoNeon}>Fit</Text>
+            <Text style={styles.logoText}>Zing</Text>
+            <View style={styles.logoDot} />
           </View>
 
           <Text style={styles.title}>DELIVERY ADDRESS</Text>
@@ -40,7 +40,7 @@ export default function AddressScreen() {
               <TextInput
                 style={styles.textInput}
                 placeholder="Street Address"
-                placeholderTextColor="#71717A"
+                placeholderTextColor="#A1A1AA"
                 value={street}
                 onChangeText={setStreet}
                 autoFocus
@@ -51,7 +51,7 @@ export default function AddressScreen() {
               <TextInput
                 style={styles.textInput}
                 placeholder="City"
-                placeholderTextColor="#71717A"
+                placeholderTextColor="#A1A1AA"
                 value={city}
                 onChangeText={setCity}
               />
@@ -61,7 +61,7 @@ export default function AddressScreen() {
               <TextInput
                 style={styles.textInput}
                 placeholder="Pincode"
-                placeholderTextColor="#71717A"
+                placeholderTextColor="#A1A1AA"
                 keyboardType="number-pad"
                 maxLength={6}
                 value={pincode}
@@ -73,7 +73,7 @@ export default function AddressScreen() {
               <TextInput
                 style={styles.textInput}
                 placeholder="Phone Number"
-                placeholderTextColor="#71717A"
+                placeholderTextColor="#A1A1AA"
                 keyboardType="phone-pad"
                 value={phone}
                 onChangeText={setPhone}
@@ -83,9 +83,11 @@ export default function AddressScreen() {
         </ScrollView>
 
         <View style={styles.bottomArea}>
-          <BouncyButton style={styles.saveBtn} onPress={handleFinish}>
-            <Text style={styles.saveBtnText}>Save Address</Text>
-          </BouncyButton>
+          <View style={styles.glowButtonWrapper}>
+            <BouncyButton style={styles.saveBtn} onPress={handleFinish}>
+              <Text style={styles.saveBtnText}>Save Address</Text>
+            </BouncyButton>
+          </View>
         </View>
 
       </KeyboardAvoidingView>
@@ -96,7 +98,7 @@ export default function AddressScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: '#FFFFFF',
   },
   content: {
     flex: 1,
@@ -111,72 +113,76 @@ const styles = StyleSheet.create({
   logoRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 28,
+    marginBottom: 32,
   },
-  logoWhite: {
+  logoText: {
     fontSize: 26,
     fontWeight: '900',
-    color: '#FFFFFF',
+    color: '#111111',
+    letterSpacing: -0.5,
   },
-  logoNeon: {
-    fontSize: 26,
-    fontWeight: '900',
-    color: Colors.neon,
+  logoDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: Colors.yellow,
+    marginLeft: 3,
+    marginTop: 4,
   },
   title: {
     fontSize: 28,
     fontWeight: '900',
-    color: '#FFFFFF',
+    color: '#111111',
     letterSpacing: 0.5,
     marginBottom: 8,
   },
   subtitle: {
-    fontSize: 13,
+    fontSize: 14,
     color: '#8E8E93',
-    lineHeight: 18,
-    marginBottom: 28,
+    lineHeight: 20,
+    marginBottom: 30,
   },
   inputsStack: {
-    gap: 14,
+    gap: 16,
   },
   inputContainer: {
-    backgroundColor: '#141416',
+    backgroundColor: '#F8F9FA',
     borderRadius: 18,
     paddingHorizontal: 20,
     height: 60,
     justifyContent: 'center',
     borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: '#E5E5EA',
   },
   inputContainerActive: {
-    borderColor: 'rgba(212, 255, 0, 0.6)',
-    backgroundColor: '#18181A',
+    borderColor: '#111111',
+    backgroundColor: '#FFFFFF',
   },
   textInput: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#111111',
   },
   bottomArea: {
     paddingBottom: 16,
   },
+  glowButtonWrapper: {
+    shadowColor: Colors.yellow,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.7,
+    shadowRadius: 18,
+    elevation: 8,
+  },
   saveBtn: {
-    backgroundColor: '#141416',
-    borderWidth: 1.5,
-    borderColor: Colors.neon,
+    backgroundColor: '#1C1C1E',
     height: 58,
-    borderRadius: 29,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: Colors.neon,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.35,
-    shadowRadius: 14,
-    elevation: 6,
   },
   saveBtnText: {
-    color: Colors.neon,
-    fontSize: 17,
+    color: '#FFFFFF',
+    fontSize: 16,
     fontWeight: '900',
     letterSpacing: 0.5,
   }

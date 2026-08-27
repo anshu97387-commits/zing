@@ -14,7 +14,7 @@ export default function ReferScreen() {
   const handleShare = async () => {
     try {
       await Share.share({
-        message: `Bro, join the 6 AM ZingFit Club! Get your custom morning nutrition stack delivered silently to your door by 6 AM. Use code ${referralCode} for 100 Zing Coins: https://zing.fit/invite/${referralCode}`,
+        message: `Bro, join the 6 AM Zing Club! Get your custom morning nutrition stack delivered silently to your door by 6 AM. Use code ${referralCode} for 100 Zing Coins: https://zing.fit/invite/${referralCode}`,
       });
     } catch (error) {
       console.log('Share error:', error.message);
@@ -38,8 +38,8 @@ export default function ReferScreen() {
         
         {/* Top Brand Logo */}
         <View style={styles.logoRow}>
-          <Text style={styles.logoWhite}>Zing</Text>
-          <Text style={styles.logoNeon}>Fit</Text>
+          <Text style={styles.logoText}>Zing</Text>
+          <View style={styles.logoDot} />
         </View>
 
         <Text style={styles.headerTitle}>THE 6 AM CLUB</Text>
@@ -54,19 +54,21 @@ export default function ReferScreen() {
           <View style={styles.codeBox}>
             <Text style={styles.codeText}>{referralCode}</Text>
             <TouchableOpacity style={styles.copyBtn} onPress={handleCopy}>
-              <Copy color={Colors.neon} size={20} />
+              <Copy color="#111111" size={20} />
             </TouchableOpacity>
           </View>
 
-          <BouncyButton style={styles.shareBtn} onPress={handleShare}>
-            <Share2 color="#000" size={18} />
-            <Text style={styles.shareBtnText}>SHARE VIA WHATSAPP</Text>
-          </BouncyButton>
+          <View style={styles.glowButtonWrapper}>
+            <BouncyButton style={styles.shareBtn} onPress={handleShare}>
+              <Share2 color="#FFFFFF" size={18} />
+              <Text style={styles.shareBtnText}>SHARE VIA WHATSAPP</Text>
+            </BouncyButton>
+          </View>
         </View>
 
         {/* Leaderboard Section */}
         <View style={styles.sectionHead}>
-          <Award color={Colors.neon} size={20} />
+          <Award color="#111111" size={20} />
           <Text style={styles.sectionTitle}>Sector 14 Leaderboard</Text>
         </View>
         <Text style={styles.sectionSub}>You're so close to #1! One more invite to take the crown.</Text>
@@ -94,8 +96,8 @@ export default function ReferScreen() {
               </View>
 
               <View style={[styles.streakTag, item.isCurrent && styles.streakTagCurrent]}>
-                <Flame color={item.isCurrent ? "#000" : Colors.neon} size={14} fill={item.isCurrent ? "#000" : Colors.neon} />
-                <Text style={[styles.streakText, item.isCurrent && styles.streakTextCurrent]}>
+                <Flame color="#111111" size={14} fill={Colors.yellow} />
+                <Text style={styles.streakText}>
                   {item.streak}
                 </Text>
               </View>
@@ -111,10 +113,10 @@ export default function ReferScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: '#FFFFFF',
   },
   scrollContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 24,
     paddingTop: 12,
     paddingBottom: 40,
   },
@@ -123,20 +125,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
   },
-  logoWhite: {
-    fontSize: 26,
+  logoText: {
+    fontSize: 28,
     fontWeight: '900',
-    color: '#FFFFFF',
+    color: '#111111',
+    letterSpacing: -0.5,
   },
-  logoNeon: {
-    fontSize: 26,
-    fontWeight: '900',
-    color: Colors.neon,
+  logoDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: Colors.yellow,
+    marginLeft: 3,
+    marginTop: 4,
   },
   headerTitle: {
     fontSize: 28,
     fontWeight: '900',
-    color: '#FFFFFF',
+    color: '#111111',
     letterSpacing: 0.5,
   },
   headerSub: {
@@ -147,16 +153,11 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   codeCard: {
-    backgroundColor: '#141416',
+    backgroundColor: '#F8F9FA',
     borderRadius: 24,
     padding: 22,
     borderWidth: 1.5,
-    borderColor: 'rgba(212, 255, 0, 0.35)',
-    shadowColor: Colors.neon,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.2,
-    shadowRadius: 14,
-    elevation: 4,
+    borderColor: '#E5E5EA',
     marginBottom: 28,
   },
   codeLabel: {
@@ -170,38 +171,40 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#1C1C1E',
+    backgroundColor: '#FFFFFF',
     borderRadius: 16,
     paddingHorizontal: 18,
     paddingVertical: 14,
     borderWidth: 1.5,
-    borderColor: Colors.neon,
+    borderColor: '#E5E5EA',
     marginBottom: 16,
   },
   codeText: {
     fontSize: 22,
     fontWeight: '900',
-    color: '#FFFFFF',
+    color: '#111111',
     letterSpacing: 2,
   },
   copyBtn: {
     padding: 4,
   },
+  glowButtonWrapper: {
+    shadowColor: Colors.yellow,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.7,
+    shadowRadius: 18,
+    elevation: 8,
+  },
   shareBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.neon,
+    backgroundColor: '#1C1C1E',
     height: 54,
-    borderRadius: 27,
-    shadowColor: Colors.neon,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.35,
-    shadowRadius: 10,
-    elevation: 4,
+    borderRadius: 18,
   },
   shareBtnText: {
-    color: '#000000',
+    color: '#FFFFFF',
     fontSize: 15,
     fontWeight: '900',
     marginLeft: 8,
@@ -215,7 +218,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '900',
-    color: '#FFFFFF',
+    color: '#111111',
     marginLeft: 8,
   },
   sectionSub: {
@@ -229,40 +232,35 @@ const styles = StyleSheet.create({
   lbRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#141416',
+    backgroundColor: '#F8F9FA',
     borderRadius: 20,
     padding: 14,
     borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: '#E5E5EA',
   },
   lbRowCurrent: {
-    borderColor: Colors.neon,
-    backgroundColor: '#18181A',
-    shadowColor: Colors.neon,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 10,
-    elevation: 3,
+    borderColor: '#111111',
+    backgroundColor: '#FFFFFF',
   },
   rankBox: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#1C1C1E',
+    backgroundColor: '#E5E5EA',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
   },
   rankBoxCurrent: {
-    backgroundColor: Colors.neon,
+    backgroundColor: '#111111',
   },
   rankText: {
     fontSize: 13,
     fontWeight: '900',
-    color: '#8E8E93',
+    color: '#71717A',
   },
   rankTextCurrent: {
-    color: '#000000',
+    color: '#FFFFFF',
   },
   lbInfo: {
     flex: 1,
@@ -272,11 +270,11 @@ const styles = StyleSheet.create({
   lbName: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#D4D4D8',
+    color: '#3A3A3C',
   },
   lbNameCurrent: {
     fontWeight: '900',
-    color: '#FFFFFF',
+    color: '#111111',
   },
   lbBadge: {
     fontSize: 14,
@@ -285,21 +283,20 @@ const styles = StyleSheet.create({
   streakTag: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1C1C1E',
+    backgroundColor: '#FFFFFF',
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#E5E5EA',
   },
   streakTagCurrent: {
-    backgroundColor: Colors.neon,
+    borderColor: '#111111',
   },
   streakText: {
     fontSize: 12,
     fontWeight: '800',
-    color: Colors.neon,
+    color: '#111111',
     marginLeft: 4,
-  },
-  streakTextCurrent: {
-    color: '#000000',
   }
 });

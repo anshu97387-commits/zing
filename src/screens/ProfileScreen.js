@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Switch, Modal, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { User, Zap, LogOut, X, CheckCircle2 } from 'lucide-react-native';
+import { User, Zap, LogOut, X } from 'lucide-react-native';
 import { useAppContext } from '../context/AppContext';
 import { Colors } from '../theme/colors';
 import BouncyButton from '../components/BouncyButton';
 
 export default function ProfileScreen() {
   const { user, updateUser, resetApp } = useAppContext();
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
   const [notifications, setNotifications] = useState(true);
   const [subDetails, setSubDetails] = useState(true);
   const [paymentMethods, setPaymentMethods] = useState(true);
@@ -35,29 +35,29 @@ export default function ProfileScreen() {
   };
 
   const orderHistory = [
-    { id: '12345', title: '7 Day Stack - ₹1499', status: 'Delivered 6:00 AM' },
-    { id: '12344', title: 'Protein Pouch - ₹999', status: 'Delivered 6:00 AM' },
-    { id: '12343', title: 'Protein Pouch - ₹999', status: 'Delivered 6:00 AM' },
+    { id: '12345', title: '7 Day Stack - ₹1499' },
+    { id: '12344', title: 'Protein Pouch - ₹999' },
+    { id: '12343', title: 'Protein Pouch - ₹999' },
   ];
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         
-        {/* Top Brand Logo */}
+        {/* Top Brand: Zing */}
         <View style={styles.logoRow}>
-          <Text style={styles.logoWhite}>Zing</Text>
-          <Text style={styles.logoNeon}>Fit</Text>
+          <Text style={styles.logoText}>Zing</Text>
+          <View style={styles.logoDot} />
         </View>
 
-        {/* 1. MY PROFILE SECTION (Mockup Match) */}
+        {/* 1. MY PROFILE */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>MY PROFILE</Text>
         </View>
 
         <View style={styles.profileCard}>
           <View style={styles.avatarCircle}>
-            <User color="#FFFFFF" size={48} />
+            <User color="#111111" size={44} />
           </View>
 
           <Text style={styles.profileName}>Name: {user?.name || 'Arjun Singh'}</Text>
@@ -69,7 +69,7 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* 2. SETTINGS SECTION (Mockup Match) */}
+        {/* 2. SETTINGS */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>SETTINGS</Text>
         </View>
@@ -102,7 +102,7 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* 3. ORDER HISTORY SECTION (Mockup Match) */}
+        {/* 3. ORDER HISTORY */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>ORDER HISTORY</Text>
         </View>
@@ -111,7 +111,7 @@ export default function ProfileScreen() {
           {orderHistory.map((order) => (
             <View key={order.id} style={styles.orderCard}>
               <View style={styles.orderBoltCircle}>
-                <Zap color={Colors.neon} size={18} fill={Colors.neon} />
+                <Zap color="#111111" size={16} fill={Colors.yellow} />
               </View>
               <View style={styles.orderInfo}>
                 <Text style={styles.orderNumber}>Order #{order.id}</Text>
@@ -130,14 +130,14 @@ export default function ProfileScreen() {
             <View style={styles.modalHead}>
               <Text style={styles.modalTitle}>Edit Profile</Text>
               <TouchableOpacity onPress={() => setShowEditModal(false)}>
-                <X color="#FFF" size={24} />
+                <X color="#000" size={24} />
               </TouchableOpacity>
             </View>
 
             <TextInput
               style={styles.modalInput}
               placeholder="Name"
-              placeholderTextColor="#71717A"
+              placeholderTextColor="#A1A1AA"
               value={name}
               onChangeText={setName}
             />
@@ -145,7 +145,7 @@ export default function ProfileScreen() {
             <TextInput
               style={styles.modalInput}
               placeholder="Email"
-              placeholderTextColor="#71717A"
+              placeholderTextColor="#A1A1AA"
               value={email}
               onChangeText={setEmail}
             />
@@ -153,14 +153,16 @@ export default function ProfileScreen() {
             <TextInput
               style={styles.modalInput}
               placeholder="Phone"
-              placeholderTextColor="#71717A"
+              placeholderTextColor="#A1A1AA"
               value={phone}
               onChangeText={setPhone}
             />
 
-            <BouncyButton style={styles.saveBtn} onPress={handleSaveProfile}>
-              <Text style={styles.saveBtnText}>Save Changes</Text>
-            </BouncyButton>
+            <View style={styles.glowButtonWrapper}>
+              <BouncyButton style={styles.saveBtn} onPress={handleSaveProfile}>
+                <Text style={styles.saveBtnText}>Save Changes</Text>
+              </BouncyButton>
+            </View>
           </View>
         </View>
       </Modal>
@@ -174,8 +176,8 @@ const SettingSwitchRow = ({ label, value, onValueChange }) => (
     <Switch 
       value={value} 
       onValueChange={onValueChange} 
-      trackColor={{ false: '#27272A', true: Colors.neon }}
-      thumbColor={value ? '#000' : '#FFF'}
+      trackColor={{ false: '#E5E5EA', true: Colors.yellow }}
+      thumbColor={value ? '#111111' : '#FFFFFF'}
     />
   </View>
 );
@@ -183,10 +185,10 @@ const SettingSwitchRow = ({ label, value, onValueChange }) => (
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: '#FFFFFF',
   },
   scrollContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 24,
     paddingTop: 12,
     paddingBottom: 40,
   },
@@ -195,15 +197,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
   },
-  logoWhite: {
-    fontSize: 26,
+  logoText: {
+    fontSize: 28,
     fontWeight: '900',
-    color: '#FFFFFF',
+    color: '#111111',
+    letterSpacing: -0.5,
   },
-  logoNeon: {
-    fontSize: 26,
-    fontWeight: '900',
-    color: Colors.neon,
+  logoDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: Colors.yellow,
+    marginLeft: 3,
+    marginTop: 4,
   },
   sectionHeader: {
     alignItems: 'center',
@@ -211,61 +217,63 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '900',
-    color: '#FFFFFF',
+    color: '#111111',
     letterSpacing: 1,
   },
   profileCard: {
-    backgroundColor: '#141416',
+    backgroundColor: '#F8F9FA',
     borderRadius: 24,
     padding: 24,
     alignItems: 'center',
     borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: '#E5E5EA',
     marginBottom: 24,
   },
   avatarCircle: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    backgroundColor: '#27272A',
+    width: 86,
+    height: 86,
+    borderRadius: 43,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1.5,
+    borderColor: '#E5E5EA',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 16,
+    marginBottom: 14,
   },
   profileName: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#111111',
     marginBottom: 4,
   },
   profileMeta: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#A1A1AA',
+    color: '#71717A',
     marginBottom: 4,
   },
   editProfileBtn: {
-    backgroundColor: '#1C1C1E',
-    borderWidth: 1,
-    borderColor: Colors.neon,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1.5,
+    borderColor: '#E5E5EA',
     paddingHorizontal: 20,
     paddingVertical: 8,
     borderRadius: 14,
-    marginTop: 12,
+    marginTop: 10,
   },
   editProfileText: {
-    color: Colors.neon,
+    color: '#111111',
     fontSize: 13,
     fontWeight: '800',
   },
   settingsCard: {
-    backgroundColor: '#141416',
+    backgroundColor: '#F8F9FA',
     borderRadius: 24,
     padding: 16,
     borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: '#E5E5EA',
     marginBottom: 24,
   },
   settingRow: {
@@ -275,12 +283,12 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#27272A',
+    borderBottomColor: '#E5E5EA',
   },
   settingLabel: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#111111',
   },
   logoutRow: {
     flexDirection: 'row',
@@ -301,22 +309,22 @@ const styles = StyleSheet.create({
   orderCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#141416',
+    backgroundColor: '#F8F9FA',
     borderRadius: 20,
     padding: 16,
     borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: '#E5E5EA',
   },
   orderBoltCircle: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#1C1C1E',
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 14,
     borderWidth: 1,
-    borderColor: 'rgba(212, 255, 0, 0.3)',
+    borderColor: '#E5E5EA',
   },
   orderInfo: {
     flex: 1,
@@ -324,27 +332,25 @@ const styles = StyleSheet.create({
   orderNumber: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#111111',
     marginBottom: 2,
   },
   orderTitle: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#A1A1AA',
+    color: '#71717A',
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.7)',
+    backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: '#141416',
+    backgroundColor: '#FFFFFF',
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     padding: 24,
     paddingBottom: 40,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   modalHead: {
     flexDirection: 'row',
@@ -355,32 +361,37 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 20,
     fontWeight: '900',
-    color: '#FFFFFF',
+    color: '#111111',
   },
   modalInput: {
-    backgroundColor: '#1C1C1E',
+    backgroundColor: '#F8F9FA',
     borderRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 16,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#111111',
     marginBottom: 14,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderWidth: 1.5,
+    borderColor: '#E5E5EA',
+  },
+  glowButtonWrapper: {
+    shadowColor: Colors.yellow,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.7,
+    shadowRadius: 18,
+    elevation: 8,
   },
   saveBtn: {
     backgroundColor: '#1C1C1E',
-    borderWidth: 1.5,
-    borderColor: Colors.neon,
     height: 56,
-    borderRadius: 28,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 8,
   },
   saveBtnText: {
-    color: Colors.neon,
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '900',
   }

@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Alert, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Zap, Flame, Bike, CheckCircle2, Sparkles, Shield, ChevronRight, Moon } from 'lucide-react-native';
+import { Zap, Flame, Bike, CheckCircle2, Sparkles, Moon } from 'lucide-react-native';
 import { useAppContext } from '../context/AppContext';
 import { Colors } from '../theme/colors';
 import BouncyButton from '../components/BouncyButton';
 
 export default function HomeScreen({ navigation }) {
   const { user, isPaused, togglePause, coins, purchaseAddon, addons } = useAppContext();
-  const [synced, setSynced] = useState(false);
 
   const STREAK_DAYS = 6;
   const WALLET_BALANCE = '₹2,450';
@@ -16,9 +15,9 @@ export default function HomeScreen({ navigation }) {
   const handleManageStreak = () => {
     Alert.alert(
       "🔥 6-Day Morning Streak",
-      `1 more day of 6:00 AM delivery unlocks your 8th day free! Keep the momentum going.`,
+      `Current Plan: 7 Days | Daily 6 AM Fuel.\nComplete 7 days unbroken to unlock your 8th day free!`,
       [
-        { text: "View Details", onPress: () => navigation.navigate('Pass') },
+        { text: "View Passes", onPress: () => navigation.navigate('Pass') },
         { text: "Awesome", style: "default" }
       ]
     );
@@ -28,7 +27,7 @@ export default function HomeScreen({ navigation }) {
     if (coins < item.cost) {
       Alert.alert(
         "Low Zing Coins",
-        `You need ${item.cost} coins for ${item.name}. Invite friends to earn more!`,
+        `You need ${item.cost} coins for ${item.name}. Refer friends to earn more!`,
         [
           { text: "Cancel", style: "cancel" },
           { text: "Earn Coins", onPress: () => navigation.navigate('Refer') }
@@ -38,11 +37,11 @@ export default function HomeScreen({ navigation }) {
     }
     Alert.alert(
       "Add to Tomorrow's Drop",
-      `Add ${item.name} for ${item.cost} Zing Coins? Rider Rahul will vacuum pack it in tonight's pouch.`,
+      `Add ${item.name} for ${item.cost} Zing Coins? Rider Rahul will pack it in tonight's vacuum pouch.`,
       [
         { text: "Cancel", style: "cancel" },
         { 
-          text: "Confirm Add-on", 
+          text: "Confirm", 
           onPress: () => {
             purchaseAddon(item);
             Alert.alert("Added! ⚡", `${item.name} is scheduled for tomorrow's 6:00 AM drop.`);
@@ -53,7 +52,7 @@ export default function HomeScreen({ navigation }) {
   };
 
   const availableAddons = [
-    { id: 'creatine', name: '5g Pure Creatine', cost: 50, icon: '⚡', desc: 'Power & ATP Boost' },
+    { id: 'creatine', name: '5g Pure Creatine', cost: 50, icon: '⚡', desc: 'Power & Strength' },
     { id: 'dark_choc', name: 'Dark Choc Chunks', cost: 30, icon: '🍫', desc: 'Antioxidants & Taste' }
   ];
 
@@ -61,110 +60,94 @@ export default function HomeScreen({ navigation }) {
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         
-        {/* Top App Bar */}
+        {/* Top Header: Zing */}
         <View style={styles.topBar}>
           <View style={styles.logoRow}>
-            <Text style={styles.logoWhite}>Zing</Text>
-            <Text style={styles.logoNeon}>Fit</Text>
+            <Text style={styles.logoText}>Zing</Text>
+            <View style={styles.logoDot} />
           </View>
 
           <TouchableOpacity style={styles.streakPill} onPress={handleManageStreak}>
-            <Flame color={Colors.neon} size={16} fill={Colors.neon} />
+            <Flame color={Colors.yellow} size={15} fill={Colors.yellow} />
             <Text style={styles.streakPillText}>{STREAK_DAYS} Days</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Floating Glow Wallet Balance Card (Mockup 1 Match) */}
-        <TouchableOpacity 
-          style={styles.floatingWalletCard} 
-          activeOpacity={0.9}
-          onPress={() => navigation.navigate('Pass')}
-        >
-          <Text style={styles.walletBalanceAmount}>{WALLET_BALANCE}</Text>
-          <Text style={styles.walletBalanceLabel}>Wallet Balance</Text>
-        </TouchableOpacity>
+        {/* 1. Floating Wallet Balance Card with Yellow Glow (Mockup Match) */}
+        <View style={styles.walletGlowWrapper}>
+          <TouchableOpacity 
+            style={styles.floatingWalletCard} 
+            activeOpacity={0.9}
+            onPress={() => navigation.navigate('Pass')}
+          >
+            <Text style={styles.walletAmount}>{WALLET_BALANCE}</Text>
+            <Text style={styles.walletLabel}>Wallet Balance</Text>
+          </TouchableOpacity>
+        </View>
 
-        {/* Active Subscription Card (Mockup 1 Match) */}
+        {/* 2. Active Subscription Card (Mockup Match) */}
         <View style={[styles.activeSubCard, isPaused && styles.activeSubCardPaused]}>
-          <View style={styles.activeSubHeader}>
-            <Text style={styles.activeSubTag}>Active Subscription</Text>
-            <View style={styles.liveDropDot} />
-          </View>
-
-          <Text style={styles.planHeadline}>Current Plan:</Text>
-          <Text style={styles.planTitle}>7 Days | Daily 6 AM Fuel</Text>
+          <Text style={styles.subCardHeader}>Active Subscription</Text>
           
-          <Text style={styles.nextDropInfo}>
+          <Text style={styles.planLabel}>Current Plan:</Text>
+          <Text style={styles.planName}>7 Days | Daily 6 AM Fuel</Text>
+          
+          <Text style={styles.nextDropText}>
             {isPaused 
               ? "Status: Drop Paused (Vacation Mode)" 
               : "Next Drop: Tomorrow, 6:00 AM"}
           </Text>
 
-          <BouncyButton style={styles.manageStreakBtn} onPress={handleManageStreak}>
-            <Text style={styles.manageStreakText}>MANAGE STREAK</Text>
-          </BouncyButton>
-        </View>
-
-        {/* Quick Order / Vacation Pause Row */}
-        <View style={styles.actionRow}>
-          <TouchableOpacity 
-            style={styles.orderNewStackBtn}
-            onPress={() => navigation.navigate('Pass')}
-          >
-            <Text style={styles.orderNewText}>Order New Stack</Text>
-            <Zap color={Colors.neon} size={16} fill={Colors.neon} />
-          </TouchableOpacity>
-
-          <View style={styles.vacationMiniBox}>
-            <Text style={styles.vacationMiniLabel}>Vacation Pause</Text>
-            <Switch 
-              value={isPaused} 
-              onValueChange={togglePause} 
-              trackColor={{ false: '#27272A', true: Colors.neon }}
-              thumbColor={isPaused ? '#000' : '#FFF'}
-            />
+          <View style={styles.glowButtonWrapper}>
+            <BouncyButton style={styles.manageStreakBtn} onPress={handleManageStreak}>
+              <Text style={styles.manageStreakText}>MANAGE STREAK</Text>
+            </BouncyButton>
           </View>
         </View>
 
-        {/* Matte Black Vacuum Pouch Feature Card (Mockup Match) */}
-        <View style={styles.pouchFeatureCard}>
-          <View style={styles.pouchTextCol}>
-            <View style={styles.fuelBadge}>
-              <Text style={styles.fuelBadgeText}>ZERO COOKING • ZERO SPOILAGE</Text>
-            </View>
-            <Text style={styles.pouchHeadline}>Pre-measured Fresh Dry Stack</Text>
-            <Text style={styles.pouchSub}>
-              {user?.name ? `${user.name}'s` : "Your"} custom formula in a matte-black vacuum sealed pouch.
-            </Text>
-          </View>
+        {/* 3. Center Link: Order New Stack (Mockup Match) */}
+        <TouchableOpacity 
+          style={styles.orderNewStackLink}
+          onPress={() => navigation.navigate('Pass')}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.orderNewStackText}>Order New Stack</Text>
+        </TouchableOpacity>
 
-          <View style={styles.pouchVisualBox}>
-            <Text style={styles.pouchEmoji}>⚡</Text>
-            <Text style={styles.pouchBrandSmall}>zing</Text>
-            <Text style={styles.pouchSubtitleSmall}>MORNING FUEL</Text>
+        {/* 4. Vacation Mode Quick Toggle */}
+        <View style={styles.vacationCard}>
+          <View style={styles.vacationTextCol}>
+            <Text style={styles.vacationTitle}>Vacation Mode</Text>
+            <Text style={styles.vacationSub}>Pause deliveries without losing subscription days</Text>
           </View>
+          <Switch 
+            value={isPaused} 
+            onValueChange={togglePause} 
+            trackColor={{ false: '#E5E5EA', true: Colors.yellow }}
+            thumbColor={isPaused ? '#111' : '#FFF'}
+          />
         </View>
 
-        {/* Add-ons Section */}
+        {/* 5. Add-ons Section */}
         {!isPaused && (
-          <View style={styles.sectionWrap}>
-            <View style={styles.sectionHead}>
-              <Text style={styles.sectionTitle}>Add-ons for Tomorrow</Text>
-              <Text style={styles.coinsAmount}>🪙 {coins} Coins</Text>
+          <View style={styles.sectionContainer}>
+            <View style={styles.sectionHeaderRow}>
+              <Text style={styles.sectionHeaderTitle}>Add-ons for Tomorrow</Text>
+              <Text style={styles.coinsBadge}>🪙 {coins} Coins</Text>
             </View>
 
-            <View style={styles.addonsRow}>
+            <View style={styles.addonsGrid}>
               {availableAddons.map(addon => {
                 const isAdded = addons.find(a => a.id === addon.id);
                 return (
                   <TouchableOpacity 
                     key={addon.id} 
-                    style={[styles.addonDarkCard, isAdded && styles.addonDarkCardActive]}
+                    style={[styles.addonBox, isAdded && styles.addonBoxActive]}
                     onPress={() => !isAdded && handleAddon(addon)}
                     activeOpacity={0.85}
                   >
-                    <Text style={styles.addonEmoji}>{addon.icon}</Text>
-                    <Text style={styles.addonName}>{addon.name}</Text>
+                    <Text style={styles.addonIcon}>{addon.icon}</Text>
+                    <Text style={styles.addonTitle}>{addon.name}</Text>
                     <Text style={styles.addonCost}>{isAdded ? 'Added ✓' : `${addon.cost} Coins`}</Text>
                   </TouchableOpacity>
                 );
@@ -173,43 +156,18 @@ export default function HomeScreen({ navigation }) {
           </View>
         )}
 
-        {/* Nutrition Formula Breakdown */}
-        <View style={styles.sectionWrap}>
-          <Text style={styles.sectionTitle}>Daily Formula ({user?.goal === 'fat_loss' ? 'Cut' : 'Bulk'})</Text>
-          <View style={styles.formulaDarkCard}>
-            <FormulaItem name="Raw Whey Isolate" grams={user?.goal === 'fat_loss' ? '30g' : '36g'} />
-            <FormulaItem name="Organic Rolled Oats" grams={user?.goal === 'fat_loss' ? '30g' : '50g'} />
-            <FormulaItem name="Black Chia Seeds" grams="5g" />
-            {user?.goal !== 'fat_loss' && (
-              <FormulaItem name="Roasted Peanut Butter" grams="10g" />
-            )}
-            {addons.map(a => (
-              <FormulaItem key={a.id} name={a.name} grams="Added" isAddon={true} />
-            ))}
-          </View>
-        </View>
-
       </ScrollView>
     </SafeAreaView>
   );
 }
 
-const FormulaItem = ({ name, grams, isAddon }) => (
-  <View style={styles.formulaItemRow}>
-    <Text style={[styles.formulaItemName, isAddon && { color: Colors.neon }]}>{name}</Text>
-    <View style={[styles.formulaGramBadge, isAddon && { borderColor: Colors.neon, backgroundColor: 'rgba(212, 255, 0, 0.1)' }]}>
-      <Text style={[styles.formulaGramText, isAddon && { color: Colors.neon }]}>{grams}</Text>
-    </View>
-  </View>
-);
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: '#FFFFFF',
   },
   scrollContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 24,
     paddingTop: 12,
     paddingBottom: 40,
   },
@@ -223,323 +181,213 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  logoWhite: {
-    fontSize: 26,
+  logoText: {
+    fontSize: 28,
     fontWeight: '900',
-    color: '#FFFFFF',
+    color: '#111111',
     letterSpacing: -0.5,
   },
-  logoNeon: {
-    fontSize: 26,
-    fontWeight: '900',
-    color: Colors.neon,
-    letterSpacing: -0.5,
+  logoDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: Colors.yellow,
+    marginLeft: 3,
+    marginTop: 4,
   },
   streakPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#18181A',
+    backgroundColor: '#F8F9FA',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: 'rgba(212, 255, 0, 0.3)',
+    borderColor: '#E5E5EA',
   },
   streakPillText: {
     fontSize: 12,
     fontWeight: '800',
-    color: Colors.neon,
+    color: '#111111',
     marginLeft: 6,
   },
-  floatingWalletCard: {
+  walletGlowWrapper: {
     alignSelf: 'flex-end',
-    backgroundColor: '#1C1C1E',
-    borderRadius: 22,
-    paddingHorizontal: 24,
-    paddingVertical: 18,
-    borderWidth: 1.5,
-    borderColor: Colors.neon,
-    shadowColor: Colors.neon,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.45,
-    shadowRadius: 16,
+    shadowColor: Colors.yellow,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.6,
+    shadowRadius: 18,
     elevation: 8,
-    marginBottom: 22,
-    minWidth: 180,
+    marginBottom: 24,
   },
-  walletBalanceAmount: {
-    fontSize: 32,
+  floatingWalletCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    borderWidth: 1.5,
+    borderColor: '#E5E5EA',
+    minWidth: 175,
+  },
+  walletAmount: {
+    fontSize: 30,
     fontWeight: '900',
-    color: Colors.neon,
+    color: '#111111',
     letterSpacing: -0.5,
   },
-  walletBalanceLabel: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#A1A1AA',
-    marginTop: 2,
-  },
-  activeSubCard: {
-    backgroundColor: '#141416',
-    borderRadius: 26,
-    padding: 22,
-    borderWidth: 1.5,
-    borderColor: 'rgba(212, 255, 0, 0.35)',
-    shadowColor: Colors.neon,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.25,
-    shadowRadius: 20,
-    elevation: 6,
-    marginBottom: 20,
-  },
-  activeSubCardPaused: {
-    borderColor: '#3F3F46',
-    shadowOpacity: 0,
-  },
-  activeSubHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  activeSubTag: {
+  walletLabel: {
     fontSize: 13,
     fontWeight: '700',
     color: '#8E8E93',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    marginTop: 2,
   },
-  liveDropDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: Colors.neon,
+  activeSubCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 22,
+    borderWidth: 1.5,
+    borderColor: '#E5E5EA',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 12,
+    elevation: 3,
+    marginBottom: 16,
   },
-  planHeadline: {
-    fontSize: 17,
+  activeSubCardPaused: {
+    backgroundColor: '#F8F9FA',
+    borderColor: '#E5E5EA',
+  },
+  subCardHeader: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#8E8E93',
+    marginBottom: 12,
+  },
+  planLabel: {
+    fontSize: 16,
     fontWeight: '600',
-    color: '#D4D4D8',
+    color: '#71717A',
   },
-  planTitle: {
+  planName: {
     fontSize: 22,
     fontWeight: '900',
-    color: '#FFFFFF',
-    marginTop: 4,
-    marginBottom: 8,
+    color: '#111111',
+    marginTop: 2,
+    marginBottom: 6,
   },
-  nextDropInfo: {
+  nextDropText: {
     fontSize: 14,
-    color: Colors.neon,
+    color: '#111111',
     fontWeight: '700',
     marginBottom: 20,
   },
+  glowButtonWrapper: {
+    width: '100%',
+    shadowColor: Colors.yellow,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.7,
+    shadowRadius: 18,
+    elevation: 8,
+  },
   manageStreakBtn: {
     backgroundColor: '#1C1C1E',
-    borderWidth: 1.5,
-    borderColor: Colors.neon,
-    borderRadius: 16,
-    height: 52,
+    height: 54,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: Colors.neon,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 4,
+    width: '100%',
   },
   manageStreakText: {
-    color: Colors.neon,
+    color: '#FFFFFF',
     fontSize: 15,
     fontWeight: '900',
     letterSpacing: 1,
   },
-  actionRow: {
+  orderNewStackLink: {
+    alignItems: 'center',
+    paddingVertical: 14,
+    marginBottom: 16,
+  },
+  orderNewStackText: {
+    color: '#111111',
+    fontSize: 15,
+    fontWeight: '800',
+    letterSpacing: 0.3,
+  },
+  vacationCard: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 24,
-    gap: 12,
-  },
-  orderNewStackBtn: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#18181A',
-    borderRadius: 16,
-    height: 50,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  orderNewText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '800',
-    marginRight: 6,
-  },
-  vacationMiniBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#18181A',
-    borderRadius: 16,
-    paddingHorizontal: 14,
-    height: 50,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  vacationMiniLabel: {
-    color: '#A1A1AA',
-    fontSize: 12,
-    fontWeight: '700',
-    marginRight: 8,
-  },
-  pouchFeatureCard: {
-    flexDirection: 'row',
-    backgroundColor: '#121214',
-    borderRadius: 24,
+    backgroundColor: '#F8F9FA',
+    borderRadius: 20,
     padding: 18,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
     marginBottom: 24,
-    alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: '#E5E5EA',
   },
-  pouchTextCol: {
+  vacationTextCol: {
     flex: 1,
     paddingRight: 12,
   },
-  fuelBadge: {
-    backgroundColor: 'rgba(212, 255, 0, 0.15)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-    alignSelf: 'flex-start',
-    marginBottom: 6,
-  },
-  fuelBadgeText: {
-    fontSize: 9,
-    fontWeight: '900',
-    color: Colors.neon,
-    letterSpacing: 0.5,
-  },
-  pouchHeadline: {
-    fontSize: 16,
+  vacationTitle: {
+    fontSize: 15,
     fontWeight: '800',
-    color: '#FFFFFF',
-    marginBottom: 4,
+    color: '#111111',
+    marginBottom: 2,
   },
-  pouchSub: {
+  vacationSub: {
     fontSize: 12,
     color: '#8E8E93',
-    lineHeight: 16,
   },
-  pouchVisualBox: {
-    width: 80,
-    height: 100,
-    backgroundColor: '#000000',
-    borderRadius: 16,
-    borderWidth: 1.5,
-    borderColor: '#27272A',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 6,
-  },
-  pouchEmoji: {
-    fontSize: 24,
-    color: Colors.neon,
-  },
-  pouchBrandSmall: {
-    fontSize: 14,
-    fontWeight: '900',
-    color: '#FFFFFF',
-    marginTop: 4,
-  },
-  pouchSubtitleSmall: {
-    fontSize: 7,
-    fontWeight: '800',
-    color: Colors.neon,
-    letterSpacing: 0.5,
-  },
-  sectionWrap: {
+  sectionContainer: {
     marginBottom: 24,
   },
-  sectionHead: {
+  sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 12,
   },
-  sectionTitle: {
+  sectionHeaderTitle: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#111111',
   },
-  coinsAmount: {
+  coinsBadge: {
     fontSize: 13,
     fontWeight: '800',
-    color: Colors.neon,
+    color: '#111111',
   },
-  addonsRow: {
+  addonsGrid: {
     flexDirection: 'row',
     gap: 12,
   },
-  addonDarkCard: {
+  addonBox: {
     flex: 1,
-    backgroundColor: '#18181A',
+    backgroundColor: '#F8F9FA',
     borderRadius: 18,
     padding: 14,
     borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: '#E5E5EA',
   },
-  addonDarkCardActive: {
-    borderColor: Colors.neon,
-    backgroundColor: 'rgba(212, 255, 0, 0.08)',
+  addonBoxActive: {
+    borderColor: '#111111',
+    backgroundColor: '#FFFDF5',
   },
-  addonEmoji: {
+  addonIcon: {
     fontSize: 22,
     marginBottom: 6,
   },
-  addonName: {
+  addonTitle: {
     fontSize: 13,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#111111',
     marginBottom: 2,
   },
   addonCost: {
     fontSize: 11,
     fontWeight: '700',
-    color: Colors.neon,
-  },
-  formulaDarkCard: {
-    backgroundColor: '#141416',
-    borderRadius: 20,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
-  },
-  formulaItemRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#27272A',
-  },
-  formulaItemName: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#E4E4E7',
-  },
-  formulaGramBadge: {
-    backgroundColor: '#27272A',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: 'transparent',
-  },
-  formulaGramText: {
-    fontSize: 13,
-    fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#71717A',
   }
 });

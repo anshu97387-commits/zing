@@ -22,20 +22,20 @@ export default function NameScreen({ navigation }) {
         
         <View style={styles.topArea}>
           <View style={styles.logoRow}>
-            <Text style={styles.logoWhite}>Zing</Text>
-            <Text style={styles.logoNeon}>Fit</Text>
+            <Text style={styles.logoText}>Zing</Text>
+            <View style={styles.logoDot} />
           </View>
 
           <Text style={styles.title}>FUEL YOUR AMBITION.</Text>
           <Text style={styles.subtitle}>
-            Keep your nutrition routine intact with daily 6:00 AM vacuum sealed doorstep drops.
+            You can keep your routine intact and start early every morning.
           </Text>
 
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.textInput}
               placeholder="What's your name? (e.g. Arjun)"
-              placeholderTextColor="#71717A"
+              placeholderTextColor="#A1A1AA"
               value={name}
               onChangeText={setName}
               autoFocus
@@ -46,19 +46,21 @@ export default function NameScreen({ navigation }) {
             <View style={styles.identityCard}>
               <Text style={styles.identityTag}>DAILY 6 AM PACKET</Text>
               <Text style={styles.identityName}>{name.trim().toUpperCase()}'S STACK</Text>
-              <Text style={styles.identitySub}>100% Genuine • Zero Cooking • Delivered at 6 AM</Text>
+              <Text style={styles.identitySub}>100% Genuine Raw Whey • Zero Spoilage</Text>
             </View>
           )}
         </View>
 
         <View style={styles.bottomArea}>
-          <BouncyButton 
-            style={[styles.startBtn, name.trim().length === 0 && styles.startBtnDisabled]} 
-            onPress={handleNext}
-            disabled={name.trim().length === 0}
-          >
-            <Text style={styles.startBtnText}>Get Started</Text>
-          </BouncyButton>
+          <View style={styles.glowButtonWrapper}>
+            <BouncyButton 
+              style={[styles.startBtn, name.trim().length === 0 && styles.startBtnDisabled]} 
+              onPress={handleNext}
+              disabled={name.trim().length === 0}
+            >
+              <Text style={styles.startBtnText}>Get Started</Text>
+            </BouncyButton>
+          </View>
         </View>
 
       </KeyboardAvoidingView>
@@ -69,7 +71,7 @@ export default function NameScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: '#FFFFFF',
   },
   content: {
     flex: 1,
@@ -83,69 +85,68 @@ const styles = StyleSheet.create({
   logoRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 28,
+    marginBottom: 32,
   },
-  logoWhite: {
+  logoText: {
     fontSize: 26,
     fontWeight: '900',
-    color: '#FFFFFF',
+    color: '#111111',
+    letterSpacing: -0.5,
   },
-  logoNeon: {
-    fontSize: 26,
-    fontWeight: '900',
-    color: Colors.neon,
+  logoDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: Colors.yellow,
+    marginLeft: 3,
+    marginTop: 4,
   },
   title: {
-    fontSize: 30,
+    fontSize: 32,
     fontWeight: '900',
-    color: '#FFFFFF',
-    letterSpacing: 0.5,
+    color: '#111111',
+    letterSpacing: -0.5,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 14,
     color: '#8E8E93',
     lineHeight: 20,
-    marginBottom: 28,
+    marginBottom: 32,
   },
   inputContainer: {
-    backgroundColor: '#141416',
+    backgroundColor: '#F8F9FA',
     borderRadius: 18,
     paddingHorizontal: 20,
     height: 60,
     justifyContent: 'center',
     borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: '#E5E5EA',
   },
   textInput: {
     fontSize: 17,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#111111',
   },
   identityCard: {
     marginTop: 24,
-    backgroundColor: '#141416',
+    backgroundColor: '#FFFDF5',
     padding: 18,
     borderRadius: 20,
     borderWidth: 1.5,
-    borderColor: Colors.neon,
-    shadowColor: Colors.neon,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 10,
-    elevation: 4,
+    borderColor: Colors.yellow,
   },
   identityTag: {
     fontSize: 10,
     fontWeight: '900',
-    color: Colors.neon,
+    color: '#111111',
     letterSpacing: 1,
     marginBottom: 4,
   },
   identityName: {
     fontSize: 18,
     fontWeight: '900',
-    color: '#FFFFFF',
+    color: '#111111',
     letterSpacing: 0.5,
   },
   identitySub: {
@@ -156,28 +157,26 @@ const styles = StyleSheet.create({
   bottomArea: {
     paddingBottom: 16,
   },
+  glowButtonWrapper: {
+    shadowColor: Colors.yellow,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.7,
+    shadowRadius: 18,
+    elevation: 8,
+  },
   startBtn: {
-    backgroundColor: '#141416',
-    borderWidth: 1.5,
-    borderColor: Colors.neon,
+    backgroundColor: '#1C1C1E',
     height: 58,
-    borderRadius: 29,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: Colors.neon,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.35,
-    shadowRadius: 14,
-    elevation: 6,
   },
   startBtnDisabled: {
-    borderColor: '#3F3F46',
-    backgroundColor: '#121214',
-    shadowOpacity: 0,
+    backgroundColor: '#C7C7CC',
   },
   startBtnText: {
-    color: Colors.neon,
-    fontSize: 17,
+    color: '#FFFFFF',
+    fontSize: 16,
     fontWeight: '900',
     letterSpacing: 0.5,
   }

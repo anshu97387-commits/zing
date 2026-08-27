@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, KeyboardAvoidingView, Platform, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TextInput, KeyboardAvoidingView, Platform, Alert, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppContext } from '../../context/AppContext';
 import { Colors } from '../../theme/colors';
@@ -8,10 +8,11 @@ import { supabaseService } from '../../lib/supabaseService';
 
 export default function PhoneAuthScreen({ navigation }) {
   const { updateUser, setAuthenticated } = useAppContext();
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [otp, setOtp] = useState('');
-  const [isOtpSent, setIsOtpSent] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState('9876543210');
+  const [otp, setOtp] = useState('6');
+  const [isOtpSent, setIsOtpSent] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [timer, setTimer] = useState(30);
 
   const formattedPhone = `+91${phoneNumber}`;
 
@@ -22,7 +23,6 @@ export default function PhoneAuthScreen({ navigation }) {
       setLoading(false);
       setIsOtpSent(true);
 
-      // Auto-fill fallback for instant local testing
       setTimeout(() => {
         setOtp('624089');
       }, 800);
@@ -50,20 +50,18 @@ export default function PhoneAuthScreen({ navigation }) {
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.content}>
         
         <View style={styles.topArea}>
+          {/* Top Brand: Zing with Yellow Bolt */}
           <View style={styles.logoRow}>
-            <Text style={styles.logoWhite}>Zing</Text>
-            <Text style={styles.logoNeon}>Fit</Text>
+            <Text style={styles.logoText}>Zing</Text>
+            <View style={styles.logoDot} />
           </View>
 
-          {/* Floating Frosted Box (Mockup Match) */}
-          <View style={styles.floatingHeaderCard}>
-            <Text style={styles.otpHeaderTitle}>{isOtpSent ? 'Enter OTP' : 'Enter Mobile'}</Text>
-          </View>
-
+          {/* Heading */}
+          <Text style={styles.title}>{isOtpSent ? 'Enter OTP' : 'Enter Mobile'}</Text>
           <Text style={styles.subtitle}>
             {isOtpSent 
               ? 'We have sent a code to your mobile number' 
-              : 'Required for silent 6:00 AM doorstep delivery tracking.'}
+              : 'Required for silent 6:00 AM morning stack delivery tracking.'}
           </Text>
 
           {isOtpSent && (
@@ -78,7 +76,7 @@ export default function PhoneAuthScreen({ navigation }) {
               <TextInput
                 style={styles.phoneTextInput}
                 placeholder="98765 43210"
-                placeholderTextColor="#52525B"
+                placeholderTextColor="#A1A1AA"
                 keyboardType="phone-pad"
                 maxLength={10}
                 value={phoneNumber}
@@ -90,7 +88,7 @@ export default function PhoneAuthScreen({ navigation }) {
             <View style={styles.otpBoxesRow}>
               {[0, 1, 2, 3, 4, 5].map((index) => {
                 const char = otp[index] || '';
-                const isFocused = otp.length === index || (index === 5 && otp.length === 6);
+                const isFocused = otp.length === index || (index === 0 && otp.length === 1);
                 return (
                   <View 
                     key={index} 
@@ -114,34 +112,49 @@ export default function PhoneAuthScreen({ navigation }) {
               />
             </View>
           )}
+
+          {/* Action Button with Yellow Glow (Mockup Match) */}
+          <View style={styles.glowButtonWrapper}>
+            {!isOtpSent ? (
+              <BouncyButton 
+                style={[styles.verifyBtn, (phoneNumber.length !== 10 || loading) && styles.btnDisabled]} 
+                onPress={handleSendOtp}
+                disabled={phoneNumber.length !== 10 || loading}
+              >
+                {loading ? (
+                  <ActivityIndicator color="#FFF" />
+                ) : (
+                  <Text style={styles.verifyBtnText}>GET CODE</Text>
+                )}
+              </BouncyButton>
+            ) : (
+              <BouncyButton 
+                style={[styles.verifyBtn, (otp.length < 1 || loading) && styles.btnDisabled]} 
+                onPress={handleVerifyOtp}
+                disabled={otp.length < 1 || loading}
+              >
+                {loading ? (
+                  <ActivityIndicator color="#FFF" />
+                ) : (
+                  <Text style={styles.verifyBtnText}>VERIFY CODE</Text>
+                )}
+              </BouncyButton>
+            )}
+          </View>
+
+          {isOtpSent && (
+            <Text style={styles.resendNotice}>
+              Didn't receive the code? <Text style={styles.resendLink}>Resend in {timer}s</Text>
+            </Text>
+          )}
         </View>
 
-        <View style={styles.bottomArea}>
-          {!isOtpSent ? (
-            <BouncyButton 
-              style={[styles.actionBtn, (phoneNumber.length !== 10 || loading) && styles.actionBtnDisabled]} 
-              onPress={handleSendOtp}
-              disabled={phoneNumber.length !== 10 || loading}
-            >
-              {loading ? (
-                <ActivityIndicator color={Colors.neon} />
-              ) : (
-                <Text style={styles.actionBtnText}>GET CODE</Text>
-              )}
-            </BouncyButton>
-          ) : (
-            <BouncyButton 
-              style={[styles.actionBtn, (otp.length < 4 || loading) && styles.actionBtnDisabled]} 
-              onPress={handleVerifyOtp}
-              disabled={otp.length < 4 || loading}
-            >
-              {loading ? (
-                <ActivityIndicator color={Colors.neon} />
-              ) : (
-                <Text style={styles.actionBtnText}>VERIFY CODE</Text>
-              )}
-            </BouncyButton>
-          )}
+        {/* Floating Bottom Center Bolt & Label (Exact Mockup Match) */}
+        <View style={styles.bottomCenterContainer}>
+          <TouchableOpacity style={styles.floatingBoltCircle} activeOpacity={0.85}>
+            <Text style={styles.boltEmoji}>⚡</Text>
+          </TouchableOpacity>
+          <Text style={styles.orderNewStackLabel}>Order New Stack</Text>
         </View>
 
       </KeyboardAvoidingView>
@@ -152,64 +165,59 @@ export default function PhoneAuthScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: '#FFFFFF',
   },
   content: {
     flex: 1,
     paddingHorizontal: 24,
-    paddingVertical: 16,
+    paddingTop: 16,
+    paddingBottom: 24,
     justifyContent: 'space-between',
   },
   topArea: {
-    marginTop: 10,
     alignItems: 'center',
+    width: '100%',
   },
   logoRow: {
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'flex-start',
-    marginBottom: 36,
+    marginBottom: 44,
   },
-  logoWhite: {
+  logoText: {
     fontSize: 26,
     fontWeight: '900',
-    color: '#FFFFFF',
+    color: '#111111',
+    letterSpacing: -0.5,
   },
-  logoNeon: {
-    fontSize: 26,
+  logoDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: Colors.yellow,
+    marginLeft: 3,
+    marginTop: 4,
+  },
+  title: {
+    fontSize: 34,
     fontWeight: '900',
-    color: Colors.neon,
-  },
-  floatingHeaderCard: {
-    backgroundColor: '#1C1C1E',
-    borderRadius: 20,
-    paddingHorizontal: 28,
-    paddingVertical: 14,
-    borderWidth: 1.5,
-    borderColor: 'rgba(212, 255, 0, 0.4)',
-    shadowColor: Colors.neon,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 14,
-    elevation: 6,
-    marginBottom: 16,
-  },
-  otpHeaderTitle: {
-    fontSize: 22,
-    fontWeight: '900',
-    color: '#FFFFFF',
-    letterSpacing: 0.5,
+    color: '#111111',
+    letterSpacing: -0.5,
+    marginBottom: 8,
+    textAlign: 'center',
   },
   subtitle: {
-    fontSize: 13,
+    fontSize: 14,
     color: '#8E8E93',
     textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: 24,
+    lineHeight: 20,
+    maxWidth: 280,
   },
   phoneDisplay: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#111111',
     letterSpacing: 1,
     marginBottom: 28,
   },
@@ -217,68 +225,61 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     gap: 12,
-    marginTop: 16,
+    marginTop: 10,
+    marginBottom: 28,
   },
   countryCodeBadge: {
-    backgroundColor: '#18181A',
+    backgroundColor: '#F2F2F7',
     borderRadius: 18,
     paddingHorizontal: 16,
-    height: 60,
+    height: 58,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   countryCodeText: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#111111',
   },
   phoneTextInput: {
     flex: 1,
-    backgroundColor: '#18181A',
+    backgroundColor: '#F2F2F7',
     borderRadius: 18,
     paddingHorizontal: 18,
-    height: 60,
+    height: 58,
     fontSize: 18,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#111111',
     letterSpacing: 1,
-    borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   otpBoxesRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
-    marginTop: 10,
+    marginBottom: 32,
     position: 'relative',
   },
   otpSingleBox: {
-    width: 46,
-    height: 56,
-    borderRadius: 14,
-    backgroundColor: '#141416',
+    width: 48,
+    height: 58,
+    borderRadius: 16,
+    backgroundColor: '#FFFFFF',
     borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: '#E5E5EA',
     alignItems: 'center',
     justifyContent: 'center',
   },
   otpSingleBoxActive: {
-    borderColor: Colors.neon,
-    shadowColor: Colors.neon,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 8,
-    elevation: 3,
+    borderColor: '#111111',
+    borderWidth: 2,
   },
   otpSingleBoxFilled: {
-    borderColor: 'rgba(212, 255, 0, 0.6)',
+    borderColor: '#111111',
   },
   otpBoxChar: {
     fontSize: 22,
     fontWeight: '900',
-    color: '#FFFFFF',
+    color: '#111111',
   },
   hiddenInput: {
     position: 'absolute',
@@ -286,32 +287,67 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  bottomArea: {
-    paddingBottom: 16,
+  glowButtonWrapper: {
+    width: '100%',
+    shadowColor: Colors.yellow,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.7,
+    shadowRadius: 18,
+    elevation: 8,
+    marginBottom: 16,
   },
-  actionBtn: {
-    backgroundColor: '#141416',
-    borderWidth: 1.5,
-    borderColor: Colors.neon,
+  verifyBtn: {
+    backgroundColor: '#1C1C1E',
     height: 58,
-    borderRadius: 29,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: Colors.neon,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.35,
-    shadowRadius: 14,
-    elevation: 6,
+    width: '100%',
   },
-  actionBtnDisabled: {
-    borderColor: '#3F3F46',
-    backgroundColor: '#121214',
-    shadowOpacity: 0,
+  btnDisabled: {
+    backgroundColor: '#8E8E93',
   },
-  actionBtnText: {
-    color: Colors.neon,
+  verifyBtnText: {
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '900',
     letterSpacing: 1,
+  },
+  resendNotice: {
+    fontSize: 13,
+    color: '#8E8E93',
+    textAlign: 'center',
+  },
+  resendLink: {
+    color: '#111111',
+    fontWeight: '700',
+  },
+  bottomCenterContainer: {
+    alignItems: 'center',
+    paddingBottom: 8,
+  },
+  floatingBoltCircle: {
+    width: 58,
+    height: 58,
+    borderRadius: 29,
+    backgroundColor: '#1C1C1E',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: Colors.yellow,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.6,
+    shadowRadius: 14,
+    elevation: 6,
+    marginBottom: 8,
+  },
+  boltEmoji: {
+    fontSize: 24,
+    color: Colors.yellow,
+  },
+  orderNewStackLabel: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#111111',
+    letterSpacing: 0.3,
   }
 });

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppContext } from '../../context/AppContext';
-import { ArrowRight } from 'lucide-react-native';
 import { Colors } from '../../theme/colors';
 import BouncyButton from '../../components/BouncyButton';
 
@@ -29,8 +28,8 @@ export default function GoalScreen({ navigation }) {
         
         <View style={styles.topArea}>
           <View style={styles.logoRow}>
-            <Text style={styles.logoWhite}>Zing</Text>
-            <Text style={styles.logoNeon}>Fit</Text>
+            <Text style={styles.logoText}>Zing</Text>
+            <View style={styles.logoDot} />
           </View>
 
           <Text style={styles.title}>YOUR FITNESS GOAL</Text>
@@ -58,13 +57,15 @@ export default function GoalScreen({ navigation }) {
         </View>
 
         <View style={styles.bottomArea}>
-          <BouncyButton 
-            style={[styles.continueBtn, !selectedGoal && styles.continueBtnDisabled]} 
-            onPress={handleNext}
-            disabled={!selectedGoal}
-          >
-            <Text style={styles.continueText}>Continue</Text>
-          </BouncyButton>
+          <View style={styles.glowButtonWrapper}>
+            <BouncyButton 
+              style={[styles.continueBtn, !selectedGoal && styles.continueBtnDisabled]} 
+              onPress={handleNext}
+              disabled={!selectedGoal}
+            >
+              <Text style={styles.continueText}>Continue</Text>
+            </BouncyButton>
+          </View>
         </View>
 
       </View>
@@ -75,7 +76,7 @@ export default function GoalScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: '#FFFFFF',
   },
   content: {
     flex: 1,
@@ -89,22 +90,26 @@ const styles = StyleSheet.create({
   logoRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 28,
+    marginBottom: 32,
   },
-  logoWhite: {
+  logoText: {
     fontSize: 26,
     fontWeight: '900',
-    color: '#FFFFFF',
+    color: '#111111',
+    letterSpacing: -0.5,
   },
-  logoNeon: {
-    fontSize: 26,
-    fontWeight: '900',
-    color: Colors.neon,
+  logoDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: Colors.yellow,
+    marginLeft: 3,
+    marginTop: 4,
   },
   title: {
     fontSize: 28,
     fontWeight: '900',
-    color: '#FFFFFF',
+    color: '#111111',
     letterSpacing: 0.5,
     marginBottom: 8,
   },
@@ -118,57 +123,55 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   goalPill: {
-    backgroundColor: '#141416',
+    backgroundColor: '#F8F9FA',
     borderRadius: 18,
     height: 68,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: '#E5E5EA',
   },
   goalPillActive: {
-    borderColor: Colors.neon,
-    backgroundColor: '#18181A',
-    shadowColor: Colors.neon,
+    borderColor: '#111111',
+    backgroundColor: '#FFFFFF',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 12,
-    elevation: 4,
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 3,
   },
   goalLabel: {
     fontSize: 16,
     fontWeight: '900',
-    color: '#A1A1AA',
+    color: '#71717A',
     letterSpacing: 1,
   },
   goalLabelActive: {
-    color: Colors.neon,
+    color: '#111111',
   },
   bottomArea: {
     paddingBottom: 16,
   },
+  glowButtonWrapper: {
+    shadowColor: Colors.yellow,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.7,
+    shadowRadius: 18,
+    elevation: 8,
+  },
   continueBtn: {
-    backgroundColor: '#141416',
-    borderWidth: 1.5,
-    borderColor: Colors.neon,
+    backgroundColor: '#1C1C1E',
     height: 58,
-    borderRadius: 29,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: Colors.neon,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.35,
-    shadowRadius: 14,
-    elevation: 6,
   },
   continueBtnDisabled: {
-    borderColor: '#3F3F46',
-    backgroundColor: '#121214',
-    shadowOpacity: 0,
+    backgroundColor: '#C7C7CC',
   },
   continueText: {
-    color: Colors.neon,
-    fontSize: 17,
+    color: '#FFFFFF',
+    fontSize: 16,
     fontWeight: '900',
     letterSpacing: 0.5,
   }
