@@ -42,7 +42,7 @@ export default function ProfileScreen({ navigation }) {
           {/* Floating Wallet Card with Yellow Ambient Glow */}
           <TouchableOpacity 
             style={styles.floatingWalletCard}
-            onPress={() => navigation.navigate('Pass')}
+            onPress={() => navigation.navigate('WalletTransactions')}
             activeOpacity={0.85}
           >
             <Text style={styles.walletAmount}>₹2,450</Text>
@@ -73,7 +73,7 @@ export default function ProfileScreen({ navigation }) {
           {/* 1. Subscription Details */}
           <TouchableOpacity 
             style={styles.settingItem} 
-            onPress={() => navigation.navigate('Pass')}
+            onPress={() => navigation.navigate('Subscription')}
             activeOpacity={0.7}
           >
             <Package color="#111111" size={18} style={styles.settingIcon} />
@@ -118,7 +118,7 @@ export default function ProfileScreen({ navigation }) {
           {/* 5. Help & Support */}
           <TouchableOpacity 
             style={styles.settingItem} 
-            onPress={() => Alert.alert("Zing 24/7 Support", "WhatsApp Helpdesk: +91 98765 43210\nEmail: support@zing.fit")}
+            onPress={() => navigation.navigate('Support')}
             activeOpacity={0.7}
           >
             <HelpCircle color="#111111" size={18} style={styles.settingIcon} />

@@ -25,10 +25,20 @@ import DrinkLogDetailScreen from './src/screens/DrinkLogDetailScreen';
 import WalletScreen from './src/screens/WalletScreen';
 import ReferScreen from './src/screens/ReferScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
+import SubscriptionScreen from './src/screens/SubscriptionScreen';
+import WalletTransactionsScreen from './src/screens/WalletTransactionsScreen';
+import SupportScreen from './src/screens/SupportScreen';
+import ChangePlanScreen from './src/screens/ChangePlanScreen';
+import ConfirmPlanScreen from './src/screens/ConfirmPlanScreen';
+import PaymentSuccessScreen from './src/screens/PaymentSuccessScreen';
+import ConfirmPauseScreen from './src/screens/ConfirmPauseScreen';
+import RitualPausedScreen from './src/screens/RitualPausedScreen';
+import MyRitualScreen from './src/screens/MyRitualScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 const HomeStack = createNativeStackNavigator();
+const ProfileStack = createNativeStackNavigator();
 
 function HomeStackNavigator() {
   return (
@@ -38,6 +48,23 @@ function HomeStackNavigator() {
       <HomeStack.Screen name="DrinkLog" component={DrinkLogScreen} />
       <HomeStack.Screen name="DrinkLogDetail" component={DrinkLogDetailScreen} />
     </HomeStack.Navigator>
+  );
+}
+
+function ProfileStackNavigator() {
+  return (
+    <ProfileStack.Navigator screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
+      <ProfileStack.Screen name="ProfileScreen" component={ProfileScreen} />
+      <ProfileStack.Screen name="Subscription" component={SubscriptionScreen} />
+      <ProfileStack.Screen name="WalletTransactions" component={WalletTransactionsScreen} />
+      <ProfileStack.Screen name="Support" component={SupportScreen} />
+      <ProfileStack.Screen name="ChangePlan" component={ChangePlanScreen} />
+      <ProfileStack.Screen name="ConfirmPlan" component={ConfirmPlanScreen} />
+      <ProfileStack.Screen name="PaymentSuccess" component={PaymentSuccessScreen} />
+      <ProfileStack.Screen name="ConfirmPause" component={ConfirmPauseScreen} />
+      <ProfileStack.Screen name="RitualPaused" component={RitualPausedScreen} />
+      <ProfileStack.Screen name="MyRitual" component={MyRitualScreen} />
+    </ProfileStack.Navigator>
   );
 }
 
@@ -106,7 +133,7 @@ function MainTabs() {
       />
       <Tab.Screen 
         name="Settings" 
-        component={ProfileScreen} 
+        component={ProfileStackNavigator} 
         options={{
           tabBarIcon: ({ color, focused }) => (
             <User color={color} size={22} strokeWidth={focused ? 2.5 : 2} />
